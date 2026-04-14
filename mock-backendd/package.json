@@ -1,0 +1,28 @@
+{
+  "name": "ordonnance-mock-backend",
+  "version": "1.0.0",
+  "description": "Mock backend API pour le projet Ordonnance Numérique",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.0.1",
+    "jsonwebtoken": "^9.0.2",
+    "pg": "^8.11.3",
+    "qrcode": "^1.5.3",
+    "uuid": "^9.0.0",
+    "speakeasy": "^2.0.0",
+    "morgan": "^1.10.0",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

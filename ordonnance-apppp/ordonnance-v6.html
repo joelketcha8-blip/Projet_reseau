@@ -1,0 +1,1674 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ordonnance</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ══════════════════════════════════════════
+   THEMES — fond adaptatif pour l'animation
+══════════════════════════════════════════ */
+:root,[data-theme="light"]{
+  --bg:#f0f2f5;--sf:#fff;--sf2:#f7f8fa;--sf3:#eef0f3;
+  --bd:#e2e5ea;--bd2:#cdd0d8;
+  --pr:#25a244;--prd:#1a7d33;--prl:#e8f5ec;
+  --tx:#1a1d23;--tx2:#5a6070;--tx3:#9aa0ad;
+  --dn:#e53935;--dnbg:#fdecea;--wn:#f59e0b;--wnbg:#fffbeb;--if:#2563eb;--ifbg:#eff6ff;
+  --sh:0 1px 4px rgba(0,0,0,.07);--shm:0 4px 16px rgba(0,0,0,.11);
+  --sb:#fff;--hdr:#25a244;--ht:#fff;--abg:#e8f5ec;--atx:#1a7d33;
+  --cin:#fff;--cout:#dcf8c6;--mbg:#f0f2f5;
+  /* Accent glow adaptatif dans l'animation — teinte cyan caducée */
+  --sp-glow:rgba(0,200,240,.06);
+  --sp-glow2:rgba(0,140,220,.04);
+  --r:8px;--rl:12px;--rxl:16px;
+}
+[data-theme="dark"]{
+  --bg:#0d1e2b;--sf:#112233;--sf2:#16293a;--sf3:#1a3047;
+  --bd:#1a3047;--bd2:#234560;
+  --pr:#00b894;--prd:#00967a;--prl:#062820;
+  --tx:#d0e8f2;--tx2:#6a9ab0;--tx3:#2e5060;
+  --dn:#ff6b6b;--dnbg:#1a0a0a;--wn:#feca57;--wnbg:#1a1200;--if:#54a0ff;--ifbg:#0a1628;
+  --sh:0 1px 6px rgba(0,0,0,.5);--shm:0 4px 24px rgba(0,0,0,.6);
+  --sb:#0d1e2b;--hdr:#0d1e2b;--ht:#d0e8f2;--abg:#062820;--atx:#00b894;
+  --cin:#16293a;--cout:#062820;--mbg:#0d1e2b;
+  --sp-glow:rgba(0,184,148,.07);--sp-glow2:rgba(84,160,255,.05);
+}
+[data-theme="ocean"]{
+  --bg:#e8f4fd;--sf:#fff;--sf2:#f0f8ff;--sf3:#dbeafe;
+  --bd:#bfdbfe;--bd2:#93c5fd;
+  --pr:#1d6fa4;--prd:#145480;--prl:#dbeafe;
+  --tx:#0f172a;--tx2:#475569;--tx3:#94a3b8;
+  --dn:#dc2626;--dnbg:#fef2f2;--wn:#d97706;--wnbg:#fffbeb;--if:#2563eb;--ifbg:#eff6ff;
+  --sh:0 1px 4px rgba(0,0,0,.07);--shm:0 4px 16px rgba(29,111,164,.15);
+  --sb:#fff;--hdr:#1d6fa4;--ht:#fff;--abg:#dbeafe;--atx:#1d4ed8;
+  --cin:#fff;--cout:#dbeafe;--mbg:#e8f4fd;
+  --sp-glow:rgba(29,111,164,.07);--sp-glow2:rgba(37,99,235,.05);
+}
+[data-theme="forest"]{
+  --bg:#f0f4f0;--sf:#fff;--sf2:#f4f7f4;--sf3:#e8efe8;
+  --bd:#d1dcd1;--bd2:#b8c9b8;
+  --pr:#2d6a2d;--prd:#1f4d1f;--prl:#e8f0e8;
+  --tx:#1a2a1a;--tx2:#4a5e4a;--tx3:#8a9e8a;
+  --dn:#b91c1c;--dnbg:#fef2f2;--wn:#b45309;--wnbg:#fffbeb;--if:#1d4ed8;--ifbg:#eff6ff;
+  --sh:0 1px 4px rgba(0,0,0,.07);--shm:0 4px 16px rgba(45,106,45,.14);
+  --sb:#fff;--hdr:#2d6a2d;--ht:#fff;--abg:#e8f0e8;--atx:#1f4d1f;
+  --cin:#fff;--cout:#e8f0e8;--mbg:#f0f4f0;
+  --sp-glow:rgba(45,106,45,.07);--sp-glow2:rgba(29,78,29,.05);
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--tx);height:100vh;overflow:hidden;font-size:14px}
+
+/* ══════════════════════════════════════════
+   LOGO — Gradient fixe, badge sombre
+   COULEURS DU LOGO : JAMAIS changées par le thème
+══════════════════════════════════════════ */
+.logo-badge{
+  background:radial-gradient(ellipse at 40% 35%, #1a2a38 0%, #080e16 70%);
+  border-radius:22%;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+  box-shadow:0 4px 24px rgba(0,0,0,.55),0 0 18px rgba(0,210,240,.08),inset 0 1px 0 rgba(255,255,255,.06);
+}
+/* Gradient SVG défini une seule fois, réutilisé partout */
+.logo-defs{position:absolute;width:0;height:0;overflow:hidden}
+
+/* ══════════════════════════════════════════
+   SPLASH — 2 SECONDES — fond = var(--bg)
+   Même fond que l'app → transition invisible
+══════════════════════════════════════════ */
+#splash{
+  position:fixed;inset:0;z-index:9999;
+  /* ↓ MÊME fond que l'application — jamais de flash */
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  /* Légère ambiance lumineuse centrée */
+  background-image:
+    radial-gradient(ellipse 60% 50% at 50% 50%, var(--sp-glow) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 70% 30%, var(--sp-glow2) 0%, transparent 70%);
+}
+/* Disparition progressive — opacity seul, pas de scale pour rester seamless */
+#splash.sp-out{animation:spOut .35s ease forwards}
+@keyframes spOut{0%{opacity:1}100%{opacity:0;pointer-events:none}}
+
+/* Contenu du splash */
+#sp-body{
+  display:flex;flex-direction:column;align-items:center;gap:0;
+  position:relative;
+}
+
+/* Phase 1 : logo entre (0→0.4s) */
+#sp-logo{animation:spLogoIn .45s cubic-bezier(.34,1.56,.64,1) 0s both}
+@keyframes spLogoIn{
+  0%{opacity:0;transform:scale(.3) translateY(8px)}
+  100%{opacity:1;transform:scale(1) translateY(0)}
+}
+/* Halo pulsant autour du logo — couleur adaptée au thème */
+#sp-logo-halo{
+  position:absolute;inset:-12px;border-radius:26%;
+  border:1px solid transparent;
+  background:linear-gradient(var(--bg),var(--bg)) padding-box,
+             linear-gradient(135deg,rgba(0,224,248,.4),rgba(0,168,224,.25),rgba(0,160,248,.35)) border-box;
+  animation:spHaloIn .5s ease .3s both, spHaloSpin 5s linear infinite;
+}
+@keyframes spHaloIn{from{opacity:0}to{opacity:1}}
+@keyframes spHaloSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+
+/* Phase 2 : titre (0.4→0.7s) */
+#sp-title{
+  font-family:'Crimson Pro',serif;font-size:36px;font-weight:700;
+  color:var(--tx);
+  letter-spacing:.6px;
+  margin-top:18px;
+  animation:spTitleIn .4s cubic-bezier(.2,.8,.2,1) .4s both;
+  /* Sur thème sombre : blanc éclatant comme dans l'image */
+}
+[data-theme="dark"] #sp-title{color:#ffffff;text-shadow:0 0 30px rgba(0,210,240,.2)}
+@keyframes spTitleIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+#sp-tag{
+  font-size:11px;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--tx3);margin-top:5px;
+  animation:spTitleIn .4s ease .55s both;
+}
+
+/* Phase 3 : rôles + icônes (0.8→1.3s) */
+#sp-roles{
+  display:flex;gap:8px;margin-top:22px;
+  animation:spRolesIn .4s ease .78s both;
+}
+@keyframes spRolesIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.sp-role{
+  display:flex;align-items:center;gap:5px;
+  background:var(--sf);
+  border:1px solid var(--bd);
+  border-radius:20px;
+  padding:5px 11px;
+  font-size:11px;font-weight:500;color:var(--tx2);
+  box-shadow:var(--sh);
+}
+.sp-role-dot{width:6px;height:6px;border-radius:50%}
+
+/* Mini icônes flottantes : géoloc, sécurité, temps réel */
+.sp-icon{
+  position:absolute;
+  background:var(--sf);border:1px solid var(--bd);
+  border-radius:8px;width:30px;height:30px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;box-shadow:var(--sh);
+  animation:spIconIn .35s cubic-bezier(.2,.8,.2,1) both;
+}
+@keyframes spIconIn{from{opacity:0;transform:scale(.4)}to{opacity:1;transform:scale(1)}}
+.sp-icon-1{top:-30px;right:-90px;animation-delay:.9s}
+.sp-icon-2{top:10px;left:-90px;animation-delay:1.0s}
+.sp-icon-3{bottom:-10px;right:-90px;animation-delay:1.1s}
+
+/* QR mini — apparaît brièvement */
+#sp-qr{
+  margin-top:18px;
+  animation:spQrIn .35s ease 1.0s both,spQrOut .3s ease 1.5s forwards;
+}
+@keyframes spQrIn{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:scale(1)}}
+@keyframes spQrOut{from{opacity:1}to{opacity:0;transform:scale(.85)}}
+.sp-qr-box{
+  background:white;padding:8px;border-radius:8px;
+  border:1px solid rgba(0,0,0,.08);
+  box-shadow:0 2px 12px rgba(0,0,0,.12);
+}
+/* QR paths dessinés */
+.qr-sq{stroke-dasharray:160;stroke-dashoffset:160;animation:qrDraw .5s ease 1.05s forwards}
+@keyframes qrDraw{to{stroke-dashoffset:0}}
+
+/* Barre de progression */
+#sp-bar{
+  position:fixed;bottom:0;left:0;right:0;height:2px;
+  background:var(--bd);
+  overflow:hidden;
+}
+#sp-bar-fill{
+  height:100%;
+  background:linear-gradient(90deg,#39e566,#00e5d4,#1976ff);
+  animation:spBarFill 1.9s linear .1s forwards;
+}
+@keyframes spBarFill{from{width:0}to{width:100%}}
+
+/* Phase 4 : tout disparaît, app se révèle (1.5→2.0s) */
+/* Géré en JS */
+
+/* ══════════════════════════════════════════
+   APP — même fond que le splash → seamless
+══════════════════════════════════════════ */
+#app{display:flex;height:100vh;flex-direction:column}
+/* L'app commence cachée, se révèle proprement */
+#app-body-wrap{opacity:1;transition:none}
+#app-body-wrap.sp-hidden{opacity:0}
+#app-body-wrap.sp-reveal{transition:opacity .35s ease;opacity:1}
+
+/* HEADER */
+#hdr{background:var(--hdr);color:var(--ht);height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shm);z-index:10;padding:0 16px}
+#ham{width:36px;height:36px;border:none;background:rgba(255,255,255,.15);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--ht);flex-shrink:0}
+#ham:hover{background:rgba(255,255,255,.25)}
+#ham svg{width:18px;height:18px}
+.hbrand{display:flex;align-items:center;gap:9px}
+.hbrand-name{font-size:16px;font-weight:700;color:var(--ht)}
+#hdr-r{display:flex;align-items:center;gap:5px}
+.hb{width:34px;height:34px;background:rgba(255,255,255,.12);border:none;border-radius:8px;cursor:pointer;color:var(--ht);display:flex;align-items:center;justify-content:center;position:relative;transition:background .15s}
+.hb:hover{background:rgba(255,255,255,.22)}
+.hb svg{width:17px;height:17px}
+.hb-nd::after{content:'';position:absolute;top:6px;right:6px;width:7px;height:7px;background:#ff6b6b;border-radius:50%;border:2px solid var(--hdr)}
+#uchip{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:none;border-radius:20px;padding:3px 9px 3px 3px;cursor:pointer;color:var(--ht);transition:background .15s}
+#uchip:hover{background:rgba(255,255,255,.22)}
+#uchip-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:white}
+.cn{font-size:12px;font-weight:500}.cr{font-size:10px;opacity:.75}
+
+/* BODY */
+#body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+#sb{width:240px;background:var(--sb);border-right:1px solid var(--bd);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .25s cubic-bezier(.4,0,.2,1)}
+#sb.col{width:56px}
+#sb-scr{flex:1;overflow-y:auto;padding:8px 0}
+#sb-scr::-webkit-scrollbar{width:3px}
+#sb-scr::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px}
+.ns{padding:4px 8px;margin-top:4px}
+.nsl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--tx3);padding:6px 8px 4px;white-space:nowrap}
+#sb.col .nsl{visibility:hidden}
+.ni{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;color:var(--tx2);font-size:13px;white-space:nowrap;overflow:hidden;margin:1px 0;transition:background .15s,color .15s}
+.ni:hover{background:var(--sf3);color:var(--tx)}
+.ni.on{background:var(--abg);color:var(--atx);font-weight:500}
+.ni svg{width:18px;height:18px;flex-shrink:0}
+.ni-t{flex:1;overflow:hidden;text-overflow:ellipsis}
+#sb.col .ni-t{opacity:0;width:0}
+.nbdg{background:var(--pr);color:white;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600;flex-shrink:0}
+#sb.col .nbdg{display:none}
+#sb-ft{padding:8px;border-top:1px solid var(--bd)}
+.sfi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;color:var(--tx2);font-size:13px;white-space:nowrap;overflow:hidden;transition:background .15s}
+.sfi:hover{background:var(--sf3);color:var(--tx)}
+.sfi svg{width:18px;height:18px;flex-shrink:0}
+#sb.col .sfi span{opacity:0;width:0}
+.sb-lrow{display:flex;align-items:center;gap:8px;padding:8px 10px;margin-bottom:4px;opacity:.35}
+#sb.col .sb-lrow span{display:none}
+.sb-lrow span{font-size:11px;color:var(--tx3)}
+
+/* MAIN */
+#main{flex:1;display:flex;overflow:hidden;min-width:0;position:relative}
+#panel{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#content{flex:1;overflow-y:auto;padding:20px}
+#content::-webkit-scrollbar{width:5px}
+#content::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:3px}
+
+/* MINI SPLASH SUR LE CONTENU (dashboard re-visit) */
+#content-splash{
+  position:absolute;inset:0;z-index:5;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;
+  flex-direction:column;
+  pointer-events:none;
+  background-image:
+    radial-gradient(ellipse 60% 50% at 50% 50%, var(--sp-glow) 0%, transparent 70%);
+}
+#content-splash.cs-hidden{display:none}
+#content-splash.cs-out{animation:csOut .3s ease forwards}
+@keyframes csOut{0%{opacity:1}100%{opacity:0}}
+
+/* RIGHT PANEL */
+#rp{width:280px;background:var(--sf);border-left:1px solid var(--bd);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+#rp.hidden{display:none}
+#rp-hdr{padding:13px 16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+#rp-body{flex:1;overflow-y:auto;padding:16px}
+
+/* ═══ COMPONENTS ═══ */
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ct{font-size:15px;font-weight:600;color:var(--tx)}
+.cs{font-size:12px;color:var(--tx3);margin-top:2px}
+.sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--tx3);margin-bottom:10px}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.sbox{background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);padding:14px;box-shadow:var(--sh);position:relative;overflow:hidden}
+.snum{font-family:'Crimson Pro',serif;font-size:30px;font-weight:600;color:var(--pr);line-height:1}
+.slbl{font-size:11px;color:var(--tx3);margin-top:4px}
+.sdelta{font-size:11px;color:var(--pr);margin-top:3px}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.bg-g{background:var(--prl);color:var(--prd);border:1px solid rgba(37,162,68,.2)}
+.bg-y{background:var(--wnbg);color:var(--wn);border:1px solid rgba(245,158,11,.2)}
+.bg-r{background:var(--dnbg);color:var(--dn);border:1px solid rgba(229,57,53,.2)}
+.bg-b{background:var(--ifbg);color:var(--if);border:1px solid rgba(37,99,235,.2)}
+.fi,.fs,.ft{width:100%;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:9px 12px;color:var(--tx);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
+.fi:focus,.fs:focus{border-color:var(--pr)}
+.fs{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239aa0ad'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:18px;padding-right:30px}
+.ft{resize:vertical;min-height:72px}
+.fg{margin-bottom:14px}
+.fl{font-size:12px;font-weight:500;color:var(--tx2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.4px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.btn{padding:9px 18px;border-radius:var(--r);border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+.btn-p{background:var(--pr);color:white}.btn-p:hover{background:var(--prd)}
+.btn-s{background:var(--sf);color:var(--tx);border:1px solid var(--bd)}.btn-s:hover{background:var(--sf3)}
+.btn-d{background:var(--dnbg);color:var(--dn);border:1px solid rgba(229,57,53,.2)}.btn-d:hover{background:var(--dn);color:white}
+.btn-g{background:transparent;color:var(--tx2);border:1px solid var(--bd)}.btn-g:hover{background:var(--sf3);color:var(--tx)}
+.btn-f{width:100%;justify-content:center}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-ic{width:32px;height:32px;padding:0;justify-content:center;border-radius:var(--r)}
+.btn-ic svg{width:15px;height:15px}
+.dtab{width:100%;border-collapse:collapse}
+.dtab th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--tx3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--bd);background:var(--sf2)}
+.dtab td{padding:10px 12px;border-bottom:1px solid var(--bd);font-size:13px;color:var(--tx2)}
+.dtab tr:last-child td{border-bottom:none}
+.dtab tbody tr:hover td{background:var(--sf2);cursor:pointer}
+.oi{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r);border:1px solid var(--bd);background:var(--sf);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.oi:hover{border-color:var(--pr)}
+.oc{font-family:'Crimson Pro',serif;font-size:16px;font-weight:600;color:var(--pr)}
+.op{font-size:12px;color:var(--tx3);margin-top:2px}
+.pbar{height:4px;background:var(--sf3);border-radius:2px;overflow:hidden;margin-top:6px;width:120px}
+.pfill{height:100%;background:var(--pr);border-radius:2px}
+.flow-box{display:flex;align-items:center;gap:8px;padding:14px;background:var(--prl);border-radius:var(--rl);margin-bottom:14px;border:1px solid rgba(37,162,68,.15)}
+.fa{text-align:center;flex:1}
+.fav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:white;margin:0 auto 5px}
+.fn{font-size:11px;font-weight:600;color:var(--tx)}
+.fr2{font-size:10px;color:var(--tx3)}
+.farr{font-size:18px;color:var(--pr);flex-shrink:0}
+.msgs{display:flex;flex-direction:column;gap:10px;padding:14px;flex:1;overflow-y:auto}
+.bub{max-width:72%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5}
+.bi{background:var(--cin);border:1px solid var(--bd);align-self:flex-start;border-radius:3px 12px 12px 12px;color:var(--tx)}
+.bo{background:var(--cout);align-self:flex-end;border-radius:12px 12px 3px 12px;color:var(--tx)}
+.bsys{background:var(--sf3);align-self:center;font-size:11px;color:var(--tx3);padding:5px 12px;border-radius:20px}
+.bfrom{font-size:10px;font-weight:600;color:var(--pr);margin-bottom:3px}
+.btm{font-size:10px;color:var(--tx3);margin-top:4px;text-align:right}
+.cbar{padding:10px 14px;border-top:1px solid var(--bd);display:flex;gap:8px;align-items:flex-end;background:var(--sf)}
+.cinp{flex:1;background:var(--sf2);border:1px solid var(--bd);border-radius:20px;padding:8px 14px;font-size:13px;font-family:'Inter',sans-serif;outline:none;color:var(--tx);resize:none}
+.cinp:focus{border-color:var(--pr)}
+.sbtn{width:36px;height:36px;background:var(--pr);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sbtn:hover{background:var(--prd)}
+.sbtn svg{width:16px;height:16px;fill:white}
+.ci{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .15s}
+.ci:hover{background:var(--sf2)}
+.ci.on{background:var(--abg)}
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;flex-shrink:0}
+.av-s{width:32px;height:32px;font-size:11px}
+.av-m{width:40px;height:40px;font-size:13px}
+.av-l{width:56px;height:56px;font-size:18px}
+.av-g{background:linear-gradient(135deg,#1a7d33,#3fb950)}
+.av-b{background:linear-gradient(135deg,#1e40af,#3b82f6)}
+.av-o{background:linear-gradient(135deg,#92400e,#f59e0b)}
+.av-r{background:linear-gradient(135deg,#991b1b,#ef4444)}
+.av-p{background:linear-gradient(135deg,#6d28d9,#a78bfa)}
+.qrw{background:white;padding:10px;border-radius:8px;display:inline-block;border:1px solid #e0e0e0}
+.sf2b{width:180px;height:180px;border:2px dashed var(--pr);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;margin:0 auto;position:relative;background:var(--sf2)}
+.sc{position:absolute;width:18px;height:18px;border-color:var(--prd);border-style:solid}
+.sc.tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.sc.tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.sc.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.sc.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.scl{height:2px;background:var(--pr);width:80%;border-radius:1px;animation:scA 2s ease-in-out infinite}
+@keyframes scA{0%{transform:translateY(-50px);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(50px);opacity:0}}
+.mapbox{height:180px;background:var(--sf2);border-radius:var(--rl);border:1px solid var(--bd);position:relative;overflow:hidden}
+.maplines{position:absolute;inset:0;background-image:linear-gradient(var(--bd) 1px,transparent 1px),linear-gradient(90deg,var(--bd) 1px,transparent 1px);background-size:28px 28px;opacity:.5}
+.mpin{position:absolute;transform:translate(-50%,-100%)}
+.mpin-d{width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.mpin-l{background:var(--sf);border:1px solid var(--bd);border-radius:6px;padding:3px 7px;font-size:10px;font-weight:500;color:var(--tx);white-space:nowrap;box-shadow:var(--sh);margin-top:2px;text-align:center}
+.ldot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:ldp 2s infinite;display:inline-block}
+@keyframes ldp{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+.mc{background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.mn{font-size:13px;font-weight:500;color:var(--tx)}
+.md{font-size:11px;color:var(--tx3);margin-top:2px}
+.mqn{font-family:'Crimson Pro',serif;font-size:22px;font-weight:600;color:var(--pr);line-height:1}
+.mqu{font-size:10px;color:var(--tx3)}
+.qc{display:flex;align-items:center;gap:6px}
+.qb{width:26px;height:26px;background:var(--sf);border:1px solid var(--bd);border-radius:6px;cursor:pointer;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--tx)}
+.qb:hover{border-color:var(--pr);color:var(--pr)}
+.qv{font-family:'Crimson Pro',serif;font-size:18px;font-weight:600;min-width:28px;text-align:center;color:var(--tx)}
+.ss{margin-bottom:24px}
+.ss h3{font-size:13px;font-weight:600;color:var(--pr);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--bd)}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);margin-bottom:6px}
+.srl{font-size:13px;font-weight:500;color:var(--tx)}
+.srs{font-size:11px;color:var(--tx3);margin-top:2px}
+.tog{width:40px;height:22px;background:var(--bd2);border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.tog.on{background:var(--pr)}
+.tog::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on::after{left:21px}
+.tgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tbtn{padding:10px 14px;border-radius:var(--r);border:2px solid var(--bd);cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;background:var(--sf);color:var(--tx);display:flex;align-items:center;gap:8px;transition:all .2s}
+.tbtn:hover,.tbtn.sel{border-color:var(--pr);background:var(--prl);color:var(--prd)}
+.tpv{width:20px;height:20px;border-radius:4px;flex-shrink:0;border:1px solid rgba(0,0,0,.1)}
+.lrow{display:flex;gap:8px;margin-top:8px}
+.lbtn{padding:8px 18px;border-radius:var(--r);border:2px solid var(--bd);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;background:var(--sf);color:var(--tx);transition:all .2s;display:flex;align-items:center;gap:6px}
+.lbtn:hover,.lbtn.sel{border-color:var(--pr);background:var(--prl);color:var(--prd)}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.mbox{background:var(--sf);border-radius:var(--rxl);padding:24px;width:440px;max-width:92vw;box-shadow:var(--shm);border:1px solid var(--bd);animation:mIn .2s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mt{font-size:16px;font-weight:600;color:var(--tx)}
+.mx{width:28px;height:28px;background:var(--sf2);border:none;border-radius:6px;cursor:pointer;color:var(--tx2);display:flex;align-items:center;justify-content:center;font-size:16px}
+.mx:hover{background:var(--sf3)}
+#toast{position:fixed;bottom:20px;right:20px;background:var(--tx);color:var(--sf);padding:11px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:200;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;max-width:300px;box-shadow:var(--shm)}
+#toast.show{opacity:1;transform:translateY(0)}
+.dd{position:relative;display:inline-block}
+.dm{position:absolute;top:calc(100% + 6px);right:0;background:var(--sf);border:1px solid var(--bd);border-radius:var(--rl);box-shadow:var(--shm);z-index:50;min-width:180px;overflow:hidden;animation:mIn .15s ease}
+.di{padding:9px 14px;font-size:13px;color:var(--tx2);cursor:pointer;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.di:hover{background:var(--sf2);color:var(--tx)}
+.di svg{width:15px;height:15px}
+.dsep{height:1px;background:var(--bd);margin:4px 0}
+.ftabs{display:flex;gap:4px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r);padding:4px;width:fit-content;margin-bottom:14px;flex-wrap:wrap}
+.ftab{padding:6px 12px;border-radius:6px;border:none;background:transparent;color:var(--tx3);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;font-weight:500;transition:all .2s}
+.ftab.on{background:var(--pr);color:white}
+.ftab:hover:not(.on){background:var(--sf3);color:var(--tx)}
+#login{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg);padding:16px}
+.lwrap{background:var(--sf);border-radius:var(--rxl);box-shadow:var(--shm);padding:36px;width:100%;max-width:400px;border:1px solid var(--bd)}
+.lt{font-family:'Crimson Pro',serif;font-size:28px;text-align:center;color:var(--tx);margin-bottom:4px}
+.ls{font-size:12px;color:var(--tx3);text-align:center;margin-bottom:22px}
+.rchips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.rchip{padding:6px 14px;border-radius:20px;border:1px solid var(--bd);background:var(--sf);color:var(--tx2);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.rchip.on{background:var(--pr);border-color:var(--pr);color:white;font-weight:500}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;background:var(--prl);color:var(--prd);border:1px solid rgba(37,162,68,.15)}
+.divider{height:1px;background:var(--bd);margin:14px 0}
+/* Watermark logo discret dans cartes */
+.logo-wm{position:absolute;bottom:8px;right:8px;opacity:.06;pointer-events:none}
+
+/* RESPONSIVE */
+@media(max-width:768px){
+  #sb{position:fixed;left:0;top:52px;bottom:0;z-index:20;transform:translateX(-100%);transition:transform .25s;width:240px!important;box-shadow:var(--shm)}
+  #sb.mob-open{transform:translateX(0)}
+  #sb.col{transform:translateX(-100%)}
+  #rp{display:none!important}
+  .sgrid{grid-template-columns:1fr 1fr}
+  #content{padding:14px}
+  .fr{grid-template-columns:1fr}
+  .fr3{grid-template-columns:1fr 1fr}
+  .hbrand-name{display:none}
+  .cn,.cr{display:none}
+  #uchip{padding:3px}
+}
+@media(max-width:480px){
+  .sgrid{grid-template-columns:1fr 1fr}
+  .snum{font-size:22px}
+  .ftabs{width:100%}
+  .ftab{padding:5px 8px;font-size:11px}
+  #sp-roles{flex-wrap:wrap;justify-content:center;gap:5px}
+  .sp-icon{display:none}
+}
+#sb-overlay{display:none;position:fixed;inset:0;top:52px;background:rgba(0,0,0,.4);z-index:19}
+#sb-overlay.show{display:block}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     GRADIENTS SVG — UNE SEULE FOIS, RÉUTILISÉS
+     Couleurs du logo : FIXES, jamais modifiées
+══════════════════════════════════════════ -->
+<svg class="logo-defs" aria-hidden="true">
+  <defs>
+    <!-- Gradient principal du logo (vert→cyan→bleu) -->
+    <linearGradient id="LG" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#39e566"/>
+      <stop offset="38%"  stop-color="#00e5d4"/>
+      <stop offset="100%" stop-color="#1565c0"/>
+    </linearGradient>
+    <!-- Gradient caducée (cyan→vert) -->
+    <linearGradient id="LGC" x1="0" y1="0" x2="0" y2="1" gradientUnits="userSpaceOnUse" y1="0" y2="100">
+      <stop offset="0%"   stop-color="#00e5d4"/>
+      <stop offset="100%" stop-color="#39e566"/>
+    </linearGradient>
+    <!-- Réutilisation dans des tailles différentes via patternTransform -->
+    <linearGradient id="LG-sm" x1="0" y1="1" x2="1" y2="0" gradientUnits="objectBoundingBox" xlink:href="#LG"/>
+  </defs>
+</svg>
+
+<!-- ══════════════════════════════════════════
+     MACRO-COMPOSANT LOGO — à instancier partout
+══════════════════════════════════════════ -->
+<template id="tpl-logo">
+  <!--
+    Logo SVG : fidèle à l'image
+    - Forme Rx (prescription symbol) : tige verticale + crochet en haut + arc + jambe
+    - Caducée central : bâton + tête ronde + 2 serpents + ailes
+    - Badge sombre : #1a2430
+    - Gradient vert→cyan→bleu FIXE
+  -->
+</template>
+
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════
+     SPLASH — 2 SECONDES
+     background: var(--bg) → seamless avec l'app
+══════════════════════════════════════════ -->
+<div id="splash">
+  <!-- Logo principal centré -->
+  <div id="sp-body">
+    <div id="sp-logo" style="position:relative">
+      <!-- Halo rotatif -->
+      <div id="sp-logo-halo"></div>
+      <!-- Badge logo 92×92 -->
+      <div class="logo-badge" style="width:92px;height:92px">
+        <svg width="62" height="62" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gc1-staff" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#e8f8ff"/><stop offset="45%" stop-color="#b0ddf5"/><stop offset="100%" stop-color="#6090b8"/>
+            </linearGradient>
+            <linearGradient id="gc1-orb" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/>
+            </linearGradient>
+            <linearGradient id="gc1-wl" x1="50" y1="28" x2="6" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#00e0f8"/><stop offset="55%" stop-color="#0098d8"/><stop offset="100%" stop-color="#0055a0"/>
+            </linearGradient>
+            <linearGradient id="gc1-wr" x1="50" y1="28" x2="94" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#00e0f8"/><stop offset="55%" stop-color="#0098d8"/><stop offset="100%" stop-color="#0055a0"/>
+            </linearGradient>
+            <filter id="gc1-glow"><feGaussianBlur stdDeviation="1.5" result="b"/><feComposite in="SourceGraphic" in2="b" operator="over"/></filter>
+          </defs>
+          <!-- Bâton central métallique -->
+          <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#gc1-staff)"/>
+          <line x1="50" y1="22" x2="50" y2="90" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+          <!-- Orbe halo extérieur -->
+          <circle cx="50" cy="14" r="13" fill="none" stroke="#00e8ff" stroke-width=".8" opacity=".2"/>
+          <circle cx="50" cy="14" r="10" fill="none" stroke="#00d0f0" stroke-width="1" opacity=".4"/>
+          <!-- Orbe principal -->
+          <circle cx="50" cy="14" r="7.5" fill="url(#gc1-orb)" filter="url(#gc1-glow)"/>
+          <circle cx="47.5" cy="11.5" r="2.5" fill="white" opacity=".45"/>
+          <!-- AILES GAUCHES — 3 couches (fond→avant) -->
+          <path d="M49 30 Q36 12 7 16 Q18 23 33 28 Q16 32 7 40 Q26 36 49 35 Z" fill="url(#gc1-wl)" opacity=".45"/>
+          <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00b8e8" opacity=".7"/>
+          <path d="M49 30 Q43 19 26 21 Q34 26 42 30 Q32 33 26 37 Q40 34 49 34 Z" fill="#00d8f8" opacity=".9"/>
+          <!-- Veines des plumes gauches -->
+          <path d="M43 30 Q36 25 28 22" stroke="#80f0ff" stroke-width=".8" fill="none" opacity=".55"/>
+          <path d="M43 31 Q37 28 30 27" stroke="#80f0ff" stroke-width=".7" fill="none" opacity=".45"/>
+          <path d="M43 32 Q37 31 31 31" stroke="#80f0ff" stroke-width=".6" fill="none" opacity=".35"/>
+          <!-- AILES DROITES — 3 couches -->
+          <path d="M51 30 Q64 12 93 16 Q82 23 67 28 Q84 32 93 40 Q74 36 51 35 Z" fill="url(#gc1-wr)" opacity=".45"/>
+          <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00b8e8" opacity=".7"/>
+          <path d="M51 30 Q57 19 74 21 Q66 26 58 30 Q68 33 74 37 Q60 34 51 34 Z" fill="#00d8f8" opacity=".9"/>
+          <!-- Veines plumes droites -->
+          <path d="M57 30 Q64 25 72 22" stroke="#80f0ff" stroke-width=".8" fill="none" opacity=".55"/>
+          <path d="M57 31 Q63 28 70 27" stroke="#80f0ff" stroke-width=".7" fill="none" opacity=".45"/>
+          <path d="M57 32 Q63 31 69 31" stroke="#80f0ff" stroke-width=".6" fill="none" opacity=".35"/>
+          <!-- Serpent 1 (argent/blanc) -->
+          <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="rgba(255,255,255,.22)" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+          <!-- Serpent 2 (cyan) -->
+          <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="rgba(255,255,255,.16)" stroke-width="1.1" fill="none" stroke-linecap="round"/>
+          <!-- Pointe bâton -->
+          <polygon points="48,88 50,94 52,88" fill="#90c0d8"/>
+        </svg>
+      </div>
+      <!-- Icônes flottantes autour du logo -->
+      <div class="sp-icon sp-icon-1">📍</div>
+      <div class="sp-icon sp-icon-2">🔒</div>
+      <div class="sp-icon sp-icon-3">⚡</div>
+    </div>
+
+    <!-- Titre -->
+    <div id="sp-title">Ordonnance</div>
+    <div id="sp-tag" data-i="sp_tag">Digital Medical Platform</div>
+
+    <!-- Rôles -->
+    <div id="sp-roles">
+      <div class="sp-role">
+        <div class="sp-role-dot" style="background:#39e566"></div>
+        <span data-i="role_med">Doctor</span>
+      </div>
+      <div class="sp-role">
+        <div class="sp-role-dot" style="background:#00e5d4"></div>
+        <span data-i="role_pat">Patient</span>
+      </div>
+      <div class="sp-role">
+        <div class="sp-role-dot" style="background:#1565c0"></div>
+        <span data-i="role_pharm">Pharmacist</span>
+      </div>
+    </div>
+
+    <!-- QR mini -->
+    <div id="sp-qr">
+      <div class="sp-qr-box">
+        <svg width="68" height="68" viewBox="0 0 100 100">
+          <rect width="100" height="100" fill="white"/>
+          <!-- Coin haut-gauche -->
+          <rect class="qr-sq" x="5"  y="5"  width="35" height="35" fill="none" stroke="#1a7d33" stroke-width="5" rx="2"/>
+          <rect x="14" y="14" width="17" height="17" fill="#1a7d33" style="animation:qrFill .2s ease 1.25s both" rx="1"/>
+          <!-- Coin haut-droite -->
+          <rect class="qr-sq" x="60" y="5"  width="35" height="35" fill="none" stroke="#1565c0" stroke-width="5" rx="2" style="animation-delay:1.1s"/>
+          <rect x="69" y="14" width="17" height="17" fill="#1565c0" style="animation:qrFill .2s ease 1.35s both" rx="1"/>
+          <!-- Coin bas-gauche -->
+          <rect class="qr-sq" x="5"  y="60" width="35" height="35" fill="none" stroke="#00bcd4" stroke-width="5" rx="2" style="animation-delay:1.2s"/>
+          <rect x="14" y="69" width="17" height="17" fill="#00bcd4" style="animation:qrFill .2s ease 1.45s both" rx="1"/>
+          <!-- Données -->
+          <g style="animation:qrFill .2s ease 1.4s both">
+            <rect x="60" y="60" width="7" height="7" fill="#1a7d33"/>
+            <rect x="71" y="60" width="7" height="7" fill="#1a7d33"/>
+            <rect x="82" y="60" width="13" height="7" fill="#1a7d33"/>
+            <rect x="60" y="71" width="12" height="7" fill="#1a7d33"/>
+            <rect x="46" y="5"  width="7" height="12" fill="#1a7d33"/>
+            <rect x="46" y="46" width="12" height="7" fill="#1a7d33"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Barre de progression 2s -->
+  <div id="sp-bar"><div id="sp-bar-fill"></div></div>
+</div>
+
+<style>
+@keyframes qrFill{from{opacity:0;transform:scale(.5)}to{opacity:1;transform:scale(1)}}
+</style>
+
+<!-- ══════════════════════════════════════════
+     LOGIN
+══════════════════════════════════════════ -->
+<div id="login" style="display:none">
+  <div class="lwrap">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px">
+      <div class="logo-badge" style="width:50px;height:50px;box-shadow:0 4px 18px rgba(0,0,0,.3)">
+        <svg width="34" height="34" viewBox="0 0 100 100" fill="none">
+          <defs>
+            <linearGradient id="gcl-s" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="100%" stop-color="#6090b8"/></linearGradient>
+            <linearGradient id="gcl-o" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/></linearGradient>
+            <linearGradient id="gcl-wl" x1="50" y1="28" x2="6" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+            <linearGradient id="gcl-wr" x1="50" y1="28" x2="94" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+          </defs>
+          <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#gcl-s)"/>
+          <line x1="50" y1="22" x2="50" y2="90" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+          <circle cx="50" cy="14" r="10" fill="none" stroke="#00d0f0" stroke-width="1" opacity=".4"/>
+          <circle cx="50" cy="14" r="7.5" fill="url(#gcl-o)"/>
+          <circle cx="47.5" cy="11.5" r="2.5" fill="white" opacity=".45"/>
+          <path d="M49 30 Q36 12 7 16 Q18 23 33 28 Q16 32 7 40 Q26 36 49 35 Z" fill="url(#gcl-wl)" opacity=".45"/>
+          <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00b8e8" opacity=".7"/>
+          <path d="M49 30 Q43 19 26 21 Q34 26 42 30 Q32 33 26 37 Q40 34 49 34 Z" fill="#00d8f8" opacity=".9"/>
+          <path d="M51 30 Q64 12 93 16 Q82 23 67 28 Q84 32 93 40 Q74 36 51 35 Z" fill="url(#gcl-wr)" opacity=".45"/>
+          <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00b8e8" opacity=".7"/>
+          <path d="M51 30 Q57 19 74 21 Q66 26 58 30 Q68 33 74 37 Q60 34 51 34 Z" fill="#00d8f8" opacity=".9"/>
+          <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+          <polygon points="48,88 50,94 52,88" fill="#90c0d8"/>
+        </svg>
+      </div>
+    </div>
+    <h1 class="lt">Ordonnance</h1>
+    <p class="ls" id="lsub">Digital medical platform · OAuth2 · JWT · 2FA</p>
+    <div class="rchips" id="rchips">
+      <button class="rchip on" onclick="pickRole('MEDECIN',this)">🩺 <span data-i="role_med">Doctor</span></button>
+      <button class="rchip" onclick="pickRole('PATIENT',this)">🤒 <span data-i="role_pat">Patient</span></button>
+      <button class="rchip" onclick="pickRole('PHARMACIEN',this)">💊 <span data-i="role_pharm">Pharmacist</span></button>
+      <button class="rchip" onclick="pickRole('ADMIN',this)">🔐 Admin</button>
+    </div>
+    <div class="fg"><label class="fl" data-i="email">Email</label><input class="fi" id="lemail" value="dr.martin@hopital.cm"/></div>
+    <div class="fg" style="margin-bottom:20px"><label class="fl" data-i="password">Password</label><input class="fi" type="password" value="••••••••"/></div>
+    <button class="btn btn-p btn-f" onclick="doLogin()"><span data-i="login_btn">Sign in</span></button>
+    <p style="text-align:center;font-size:11px;color:var(--tx3);margin-top:12px">OAuth2 · JWT · 2FA · PWA · Offline-First</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     APP
+══════════════════════════════════════════ -->
+<div id="app" style="display:none">
+  <div id="sb-overlay" onclick="closeMobileSB()"></div>
+
+  <!-- Header — toujours visible, même pendant l'animation -->
+  <div id="hdr">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="ham" onclick="toggleSB()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="hbrand">
+        <!-- Logo header 32×32 -->
+        <div class="logo-badge" style="width:32px;height:32px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.4)">
+          <svg width="21" height="21" viewBox="0 0 100 100" fill="none">
+            <defs>
+              <linearGradient id="gch-s" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="100%" stop-color="#6090b8"/></linearGradient>
+              <linearGradient id="gch-o" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/></linearGradient>
+              <linearGradient id="gch-wl" x1="50" y1="28" x2="6" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+              <linearGradient id="gch-wr" x1="50" y1="28" x2="94" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+            </defs>
+            <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#gch-s)"/>
+            <line x1="50" y1="22" x2="50" y2="90" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+            <circle cx="50" cy="14" r="10" fill="none" stroke="#00d0f0" stroke-width="1" opacity=".4"/>
+            <circle cx="50" cy="14" r="7.5" fill="url(#gch-o)"/>
+            <circle cx="47.5" cy="11.5" r="2.5" fill="white" opacity=".45"/>
+            <path d="M49 30 Q36 12 7 16 Q18 23 33 28 Q16 32 7 40 Q26 36 49 35 Z" fill="url(#gch-wl)" opacity=".45"/>
+            <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00b8e8" opacity=".7"/>
+            <path d="M49 30 Q43 19 26 21 Q34 26 42 30 Q32 33 26 37 Q40 34 49 34 Z" fill="#00d8f8" opacity=".9"/>
+            <path d="M51 30 Q64 12 93 16 Q82 23 67 28 Q84 32 93 40 Q74 36 51 35 Z" fill="url(#gch-wr)" opacity=".45"/>
+            <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00b8e8" opacity=".7"/>
+            <path d="M51 30 Q57 19 74 21 Q66 26 58 30 Q68 33 74 37 Q60 34 51 34 Z" fill="#00d8f8" opacity=".9"/>
+            <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+            <polygon points="48,88 50,94 52,88" fill="#90c0d8"/>
+          </svg>
+        </div>
+        <span class="hbrand-name">Ordonnance</span>
+      </div>
+    </div>
+    <div id="hdr-r">
+      <button class="hb" onclick="setNav('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+      <button class="hb hb-nd" onclick="setNav('notifications')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></button>
+      <div class="dd">
+        <button id="uchip" onclick="toggleDD('umenu')">
+          <div id="uchip-av" class="av av-s av-g">DM</div>
+          <div style="text-align:left"><div class="cn" id="ucn">Dr. Martin</div><div class="cr" id="ucr">Doctor</div></div>
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:13px;height:13px;opacity:.7"><path d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="dm" id="umenu" style="display:none">
+          <div class="di" onclick="setNav('settings');closeDD('umenu')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i="my_profile">My profile</span></div>
+          <div class="di" onclick="setNav('settings');closeDD('umenu')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg><span data-i="settings">Settings</span></div>
+          <div class="dsep"></div>
+          <div class="di" style="color:var(--dn)" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span data-i="logout">Sign out</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="body">
+    <div id="sb">
+      <div id="sb-scr">
+        <div class="ns">
+          <div class="nsl" data-i="nav_main">Main</div>
+          <div class="ni on" id="ni-dashboard" onclick="setNav('dashboard')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            <span class="ni-t" data-i="nav_dashboard">Dashboard</span>
+          </div>
+          <div class="ni" id="ni-ordonnances" onclick="setNav('ordonnances')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-3h8v2H8zm0-3h5v2H8z"/></svg>
+            <span class="ni-t" data-i="nav_ord">Prescriptions</span>
+            <span class="nbdg" id="ord-badge">3</span>
+          </div>
+          <div class="ni" id="ni-messages" onclick="setNav('messages')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+            <span class="ni-t" data-i="nav_msg">Messaging</span>
+            <span class="nbdg">2</span>
+          </div>
+        </div>
+        <div class="ns" id="ns-mgmt">
+          <div class="nsl" data-i="nav_mgmt">Management</div>
+          <div class="ni" id="ni-patients" onclick="setNav('patients')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span class="ni-t" data-i="nav_patients">Patients</span>
+          </div>
+          <div class="ni" id="ni-pharmacies" onclick="setNav('pharmacies')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span class="ni-t" data-i="nav_pharm">Pharmacies</span>
+          </div>
+        </div>
+        <div class="ns">
+          <div class="nsl" data-i="nav_sys">System</div>
+          <div class="ni" id="ni-notifications" onclick="setNav('notifications')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            <span class="ni-t" data-i="nav_notif">Notifications</span>
+            <span class="nbdg">1</span>
+          </div>
+          <div class="ni" id="ni-geolocation" onclick="setNav('pharmacies')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.94 11A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm0-11c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/></svg>
+            <span class="ni-t" data-i="nav_geo">Geolocation</span>
+          </div>
+        </div>
+      </div>
+      <div id="sb-ft">
+        <!-- Logo mini sidebar footer -->
+        <div class="sb-lrow">
+          <div class="logo-badge" style="width:22px;height:22px;border-radius:5px;flex-shrink:0">
+            <svg width="14" height="14" viewBox="0 0 100 100" fill="none">
+              <defs>
+                <linearGradient id="gcsf-s" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="100%" stop-color="#6090b8"/></linearGradient>
+                <linearGradient id="gcsf-o" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/></linearGradient>
+              </defs>
+              <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#gcsf-s)"/>
+              <circle cx="50" cy="14" r="7.5" fill="url(#gcsf-o)"/>
+              <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00c8f0" opacity=".85"/>
+              <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00c8f0" opacity=".85"/>
+              <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span>v1.0 · 3GI</span>
+        </div>
+        <div class="sfi" onclick="setNav('settings')">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;flex-shrink:0"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span data-i="settings">Settings</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="main">
+      <div id="panel">
+        <!-- MINI SPLASH SUR LE CONTENU (re-visit dashboard) -->
+        <div id="content-splash" class="cs-hidden">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+            <div class="logo-badge" style="width:64px;height:64px;animation:spLogoIn .35s cubic-bezier(.34,1.56,.64,1) both">
+              <svg width="42" height="42" viewBox="0 0 100 100" fill="none">
+                <defs>
+                  <linearGradient id="gccs-s" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="100%" stop-color="#6090b8"/></linearGradient>
+                  <linearGradient id="gccs-o" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/></linearGradient>
+                  <linearGradient id="gccs-wl" x1="50" y1="28" x2="6" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+                  <linearGradient id="gccs-wr" x1="50" y1="28" x2="94" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+                </defs>
+                <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#gccs-s)"/>
+                <line x1="50" y1="22" x2="50" y2="90" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+                <circle cx="50" cy="14" r="10" fill="none" stroke="#00d0f0" stroke-width="1" opacity=".4"/>
+                <circle cx="50" cy="14" r="7.5" fill="url(#gccs-o)"/>
+                <circle cx="47.5" cy="11.5" r="2.5" fill="white" opacity=".45"/>
+                <path d="M49 30 Q36 12 7 16 Q18 23 33 28 Q16 32 7 40 Q26 36 49 35 Z" fill="url(#gccs-wl)" opacity=".45"/>
+                <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00b8e8" opacity=".7"/>
+                <path d="M49 30 Q43 19 26 21 Q34 26 42 30 Q32 33 26 37 Q40 34 49 34 Z" fill="#00d8f8" opacity=".9"/>
+                <path d="M51 30 Q64 12 93 16 Q82 23 67 28 Q84 32 93 40 Q74 36 51 35 Z" fill="url(#gccs-wr)" opacity=".45"/>
+                <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00b8e8" opacity=".7"/>
+                <path d="M51 30 Q57 19 74 21 Q66 26 58 30 Q68 33 74 37 Q60 34 51 34 Z" fill="#00d8f8" opacity=".9"/>
+                <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <polygon points="48,88 50,94 52,88" fill="#90c0d8"/>
+              </svg>
+            </div>
+            <div style="font-family:'Crimson Pro',serif;font-size:22px;font-weight:700;color:var(--tx);margin-top:12px;animation:spTitleIn .35s ease .3s both">Ordonnance</div>
+            <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--tx3);margin-top:4px;animation:spTitleIn .35s ease .4s both" data-i="sp_tag">Digital Medical Platform</div>
+            <!-- Barre mini 2s -->
+            <div style="width:100px;height:2px;background:var(--bd);border-radius:1px;overflow:hidden;margin-top:20px;animation:spTitleIn .2s ease .2s both">
+              <div id="cs-bar" style="height:100%;background:linear-gradient(90deg,#39e566,#00e5d4,#1565c0);animation:spBarFill 1.9s linear .1s forwards;border-radius:1px"></div>
+            </div>
+          </div>
+        </div>
+        <div id="content"></div>
+      </div>
+      <div id="rp" class="hidden">
+        <div id="rp-hdr">
+          <span style="font-size:13px;font-weight:600;color:var(--tx)" id="rp-title">Details</span>
+          <button class="btn-ic btn-g" onclick="closeRP()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        </div>
+        <div id="rp-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   TRANSLATIONS
+══════════════════════════════════════════ */
+const TR={
+  en:{
+    email:'Email',password:'Password',login_btn:'Sign in',
+    role_med:'Doctor',role_pat:'Patient',role_pharm:'Pharmacist',
+    nav_main:'Main',nav_dashboard:'Dashboard',nav_ord:'Prescriptions',nav_msg:'Messaging',
+    nav_mgmt:'Management',nav_patients:'Patients',nav_pharm:'Pharmacies',
+    nav_sys:'System',nav_notif:'Notifications',nav_geo:'Geolocation',settings:'Settings',
+    my_profile:'My profile',logout:'Sign out',
+    new_ord:'New prescription',scan_ord:'Scan prescription',deliver:'Dispense medications',
+    share:'Share',save:'Save',cancel:'Cancel',
+    valid:'Valid',expired:'Expired',partial:'Partial',done:'Completed',cancelled:'Cancelled',
+    patient:'Patient',doctor:'Doctor',pharmacist:'Pharmacist',
+    settings_title:'Settings',appearance:'Appearance',language:'Language',about:'About',
+    notifications_s:'Notifications',privacy:'Privacy & Security',
+    theme_light:'Light',theme_dark:'Dark',theme_ocean:'Ocean',theme_forest:'Forest',
+    activate_2fa:'Enable 2FA',offline:'Offline mode',notif_push:'Push notifications',
+    realtime:'Real-time active',online:'Online',
+    search_msg:'Search a conversation…',search_pat:'Search a patient…',
+    open_hours:'Open',closed:'Closed',locate_me:'Locate me',mark_all_read:'Mark all as read',
+    profile:'Profile',change_password:'Change password',active_sessions:'Active sessions',
+    prescription_created:'Prescription created!',patient_notified:'Patient notified.',
+    delivery_done:'Delivery recorded!',doctor_notified:'Doctor notified via Kafka.',
+    scan_instruction:'Scan the QR code',enter_code:'or enter the code',verify:'Verify',
+    delivery_stats:"Today's deliveries",
+    greet_med:'Hello, Dr.',greet_pat:'My Prescriptions',greet_pharm:'Pharmacist Portal',greet_admin:'Administration',
+    this_month:'This month',add:'Add',new_prescription:'New prescription',new_patient:'New patient',
+    today_deliveries:"Today's deliveries",pending:'Pending',rejected:'Rejected',dispensed:'Dispensed',
+    send:'Send',type_message:'Type a message…',
+    filter_all:'All',filter_active:'Active',filter_partial:'Partial',filter_done:'Done',filter_expired:'Expired',
+    sp_tag:'Digital Medical Platform'
+  },
+  fr:{
+    email:'Email',password:'Mot de passe',login_btn:'Se connecter',
+    role_med:'Médecin',role_pat:'Patient',role_pharm:'Pharmacien',
+    nav_main:'Principal',nav_dashboard:'Tableau de bord',nav_ord:'Ordonnances',nav_msg:'Messagerie',
+    nav_mgmt:'Gestion',nav_patients:'Patients',nav_pharm:'Pharmacies',
+    nav_sys:'Système',nav_notif:'Notifications',nav_geo:'Géolocalisation',settings:'Paramètres',
+    my_profile:'Mon profil',logout:'Déconnexion',
+    new_ord:'Nouvelle ordonnance',scan_ord:'Scanner une ordonnance',deliver:'Délivrer les médicaments',
+    share:'Partager',save:'Enregistrer',cancel:'Annuler',
+    valid:'Valide',expired:'Expirée',partial:'Partielle',done:'Terminée',cancelled:'Annulée',
+    patient:'Patient',doctor:'Médecin',pharmacist:'Pharmacien',
+    settings_title:'Paramètres',appearance:'Apparence',language:'Langue',about:'À propos',
+    notifications_s:'Notifications',privacy:'Confidentialité & Sécurité',
+    theme_light:'Clair',theme_dark:'Sombre',theme_ocean:'Océan',theme_forest:'Forêt',
+    activate_2fa:'Activer la 2FA',offline:'Mode hors ligne',notif_push:'Notifications push',
+    realtime:'Temps réel actif',online:'En ligne',
+    search_msg:'Rechercher une conversation…',search_pat:'Rechercher un patient…',
+    open_hours:'Ouvert',closed:'Fermé',locate_me:'Me localiser',mark_all_read:'Tout marquer comme lu',
+    profile:'Profil',change_password:'Changer le mot de passe',active_sessions:'Sessions actives',
+    prescription_created:'Ordonnance créée !',patient_notified:'Patient notifié.',
+    delivery_done:'Délivrance enregistrée !',doctor_notified:'Médecin notifié via Kafka.',
+    scan_instruction:'Scanner le QR code',enter_code:'ou saisir le code',verify:'Vérifier',
+    delivery_stats:'Délivrances du jour',
+    greet_med:'Bonjour, Dr.',greet_pat:'Mes Ordonnances',greet_pharm:'Espace Pharmacien',greet_admin:'Administration',
+    this_month:'Ce mois',add:'Ajouter',new_prescription:'Nouvelle ordonnance',new_patient:'Nouveau patient',
+    today_deliveries:"Délivrances aujourd'hui",pending:'En attente',rejected:'Rejets',dispensed:'Médicaments remis',
+    send:'Envoyer',type_message:'Écrire un message…',
+    filter_all:'Toutes',filter_active:'Actives',filter_partial:'Partielles',filter_done:'Terminées',filter_expired:'Expirées',
+    sp_tag:'Plateforme Médicale Numérique'
+  }
+};
+
+/* ══════════════════════════════════════════
+   STATE
+══════════════════════════════════════════ */
+const S={
+  role:'MEDECIN',nav:'dashboard',theme:'light',lang:'en',
+  sbOpen:true,cContact:0,ordFilter:'all',
+  qty:{0:21,1:10},
+  togs:{notif:true,sound:false,preview:true,offline:true,sync:true},
+  splashTimer:null,
+  isFirstLoad:true
+};
+
+const ROLES={
+  MEDECIN:{en:'Doctor',fr:'Médecin',av:'DM',cls:'av-g'},
+  PATIENT:{en:'Patient',fr:'Patient',av:'PL',cls:'av-b'},
+  PHARMACIEN:{en:'Pharmacist',fr:'Pharmacien',av:'PC',cls:'av-o'},
+  ADMIN:{en:'Admin',fr:'Admin',av:'AD',cls:'av-r'}
+};
+
+const CONTACTS=[
+  {av:'DM',cls:'av-g',name:'Dr. Martin Dupuis',prev:'Here is your prescription.',prevFr:'Voici votre ordonnance.',time:'2 min',unread:1},
+  {av:'SB',cls:'av-b',name:'Sophie Bernard',prev:'Thank you doctor!',prevFr:'Merci beaucoup docteur !',time:'10 min',unread:0},
+  {av:'PC',cls:'av-o',name:'Pharmacie Centrale',prev:'Prescription validated.',prevFr:'Ordonnance validée.',time:'30 min',unread:0},
+  {av:'PL',cls:'av-r',name:'Paul Lambert',prev:"I have questions…",prevFr:"J'ai des questions…",time:'1 h',unread:2},
+  {av:'JD',cls:'av-p',name:'Dr. Jean Dubois',prev:'Appointment tomorrow 9am',prevFr:'Consultation demain 9h',time:'3 h',unread:0}
+];
+
+const CONVS={
+  0:[{t:'sys',tx:'April 9, 2025',txFr:'09 Avril 2025'},{t:'in',from:'Dr. Martin Dupuis',tx:'Hello Paul, here is your prescription ORD-2025-00042.',txFr:'Bonjour Paul, voici votre ordonnance ORD-2025-00042.',tm:'09:31'},{t:'out',tx:'Thank you very much!',txFr:'Merci beaucoup !',tm:'09:38'},{t:'in',from:'Pharmacie Centrale',tx:'Medications being prepared.',txFr:'Médicaments en préparation.',tm:'10:05'}],
+  1:[{t:'sys',tx:'April 8',txFr:'8 Avril'},{t:'out',tx:'Sophie, your prescription has been sent.',txFr:'Votre ordonnance a été envoyée.',tm:'14:20'},{t:'in',from:'Sophie Bernard',tx:'Received, thanks!',txFr:"Reçue, merci !",tm:'14:35'}],
+  2:[{t:'sys',tx:'Today',txFr:"Aujourd'hui"},{t:'in',from:'Pharmacie Centrale',tx:'Medications dispensed for Mrs. Bernard.',txFr:'Médicaments délivrés pour Mme Bernard.',tm:'09:15'},{t:'out',tx:'Is ORD-00041 still valid?',txFr:"L'ordonnance ORD-00041 est-elle encore valide ?",tm:'09:20'}],
+  3:[{t:'sys',tx:'Today',txFr:"Aujourd'hui"},{t:'in',from:'Paul Lambert',tx:'Can I take ibuprofen on empty stomach?',txFr:'Puis-je prendre ibuprofène à jeun ?',tm:'11:01'},{t:'out',tx:'No, always take it with food.',txFr:'Non, prenez-le toujours avec de la nourriture.',tm:'11:15'}],
+  4:[{t:'sys',tx:'Today',txFr:"Aujourd'hui"},{t:'in',from:'Dr. Jean Dubois',tx:'Patient Lambert has penicillin allergy.',txFr:'Le patient Lambert a allergie pénicilline.',tm:'08:30'},{t:'out',tx:'Noted, thank you.',txFr:'Noté, merci.',tm:'08:45'}]
+};
+
+function t(k){return(TR[S.lang]||TR.en)[k]||k;}
+function tv(e,f){return S.lang==='fr'?f:e;}
+
+/* ══════════════════════════════════════════
+   SPLASH — 2 secondes
+   Premier chargement : splash plein écran
+   Re-visit dashboard : mini splash sur le contenu
+══════════════════════════════════════════ */
+
+// Réinitialise et lance le grand splash plein écran
+function showFullSplash(onDone){
+  const sp = document.getElementById('splash');
+  
+  // Remettre le fond adaptatif
+  sp.style.display = 'flex';
+  sp.style.opacity = '1';
+  sp.classList.remove('sp-out');
+  
+  // Remettre les animations CSS internes
+  const animated = sp.querySelectorAll('#sp-logo,#sp-logo-halo,#sp-title,#sp-tag,#sp-roles,#sp-qr,.sp-icon,#sp-bar-fill,.qr-sq');
+  animated.forEach(el => {
+    el.style.animation = 'none';
+    void el.offsetHeight; // reflow
+    el.style.animation = '';
+  });
+  
+  // Timer : fade-out à 1.7s, caché à 2s
+  clearTimeout(S.splashTimer);
+  S.splashTimer = setTimeout(() => {
+    sp.classList.add('sp-out');
+    setTimeout(() => {
+      sp.style.display = 'none';
+      onDone && onDone();
+    }, 350);
+  }, 1700);
+}
+
+// Mini splash dans la zone contenu (dashboard re-visit)
+function showContentSplash(onDone){
+  const cs = document.getElementById('content-splash');
+  const content = document.getElementById('content');
+  
+  // Cacher le contenu, montrer le mini splash
+  content.style.display = 'none';
+  cs.classList.remove('cs-hidden','cs-out');
+  
+  // Réinitialiser animations
+  const animated = cs.querySelectorAll('[style*="animation"]');
+  animated.forEach(el => {
+    const anim = el.style.animation;
+    el.style.animation = 'none';
+    void el.offsetHeight;
+    el.style.animation = anim;
+  });
+  
+  // Réinitialiser la barre
+  const bar = document.getElementById('cs-bar');
+  if(bar){ bar.style.animation='none'; void bar.offsetHeight; bar.style.animation=''; }
+  
+  clearTimeout(S.splashTimer);
+  S.splashTimer = setTimeout(() => {
+    cs.classList.add('cs-out');
+    setTimeout(() => {
+      cs.classList.add('cs-hidden');
+      content.style.display = '';
+      onDone && onDone();
+    }, 300);
+  }, 1700);
+}
+
+/* ══════════════════════════════════════════
+   BOOT — Premier chargement
+══════════════════════════════════════════ */
+window.addEventListener('load', () => {
+  // Splash plein écran au démarrage
+  showFullSplash(() => {
+    document.getElementById('login').style.display = 'flex';
+  });
+});
+
+/* ══════════════════════════════════════════
+   LOGIN / LOGOUT
+══════════════════════════════════════════ */
+function pickRole(r, btn){
+  S.role = r;
+  document.querySelectorAll('.rchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const m={MEDECIN:'dr.martin@hopital.cm',PATIENT:'paul.lambert@gmail.com',PHARMACIEN:'pharmacie.centrale@pharm.cm',ADMIN:'admin@ordonnance.cm'};
+  document.getElementById('lemail').value = m[r];
+}
+
+function doLogin(){
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  setupApp();
+  // Premier dashboard après login : mini splash dans le contenu
+  S.isFirstLoad = false;
+  showContentSplash(() => renderContent());
+}
+
+function doLogout(){
+  closeDD('umenu');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('content').style.display = '';
+  // Grand splash puis login
+  showFullSplash(() => {
+    document.getElementById('login').style.display = 'flex';
+  });
+  toast(t('logout') + ' ✓');
+}
+
+function setupApp(){
+  const r = ROLES[S.role];
+  const av = document.getElementById('uchip-av');
+  av.textContent = r.av; av.className = `av av-s ${r.cls}`;
+  const names={MEDECIN:'Dr. Martin',PATIENT:'Paul Lambert',PHARMACIEN:'Pharmacie Centrale',ADMIN:'Admin'};
+  document.getElementById('ucn').textContent = names[S.role];
+  document.getElementById('ucr').textContent = S.lang==='fr' ? r.fr : r.en;
+  document.getElementById('ns-mgmt').style.display = (S.role==='MEDECIN'||S.role==='ADMIN') ? '' : 'none';
+  applyI18n();
+}
+
+/* ══════════════════════════════════════════
+   SIDEBAR
+══════════════════════════════════════════ */
+const isMob = () => window.innerWidth <= 768;
+function toggleSB(){
+  if(isMob()){
+    const sb = document.getElementById('sb');
+    const ov = document.getElementById('sb-overlay');
+    const open = sb.classList.toggle('mob-open');
+    ov.classList.toggle('show', open);
+  } else {
+    S.sbOpen = !S.sbOpen;
+    document.getElementById('sb').classList.toggle('col', !S.sbOpen);
+  }
+}
+function closeMobileSB(){
+  document.getElementById('sb').classList.remove('mob-open');
+  document.getElementById('sb-overlay').classList.remove('show');
+}
+window.addEventListener('resize', () => { if(!isMob()) closeMobileSB(); });
+
+/* ══════════════════════════════════════════
+   NAVIGATION
+   Dashboard → mini splash TOUJOURS
+   Autres pages → direct
+══════════════════════════════════════════ */
+function setNav(nav){
+  S.nav = nav;
+  document.querySelectorAll('.ni').forEach(e => e.classList.remove('on'));
+  const el = document.getElementById('ni-'+nav);
+  if(el) el.classList.add('on');
+  closeRP();
+  if(isMob()) closeMobileSB();
+  
+  if(nav === 'dashboard'){
+    // Animation à chaque visite du dashboard
+    showContentSplash(() => renderContent());
+  } else {
+    renderContent();
+  }
+}
+
+/* ══════════════════════════════════════════
+   LOGO SVG MINI (watermark discret)
+══════════════════════════════════════════ */
+function logoWM(size=36){
+  const id='gwm'+size+Math.random().toString(36).slice(2,6);
+  return `<div class="logo-wm"><div class="logo-badge" style="width:${size}px;height:${size}px;border-radius:${Math.round(size*.22)}px">
+    <svg width="${Math.round(size*.65)}" height="${Math.round(size*.65)}" viewBox="0 0 100 100" fill="none">
+      <defs>
+        <linearGradient id="${id}-s" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="100%" stop-color="#6090b8"/></linearGradient>
+        <linearGradient id="${id}-o" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/></linearGradient>
+      </defs>
+      <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#${id}-s)"/>
+      <circle cx="50" cy="14" r="7.5" fill="url(#${id}-o)"/>
+      <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00c8f0" opacity=".85"/>
+      <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00c8f0" opacity=".85"/>
+      <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div></div>`;
+}
+
+/* ══════════════════════════════════════════
+   RENDER CONTENT
+══════════════════════════════════════════ */
+function renderContent(){
+  const c = document.getElementById('content');
+  const m = {
+    dashboard:renderDash, ordonnances:renderOrd, messages:renderMsg,
+    patients:renderPat, pharmacies:renderPharm,
+    notifications:renderNotif, settings:renderSettings
+  };
+  c.innerHTML = (m[S.nav]||(() => '<p style="padding:40px;text-align:center;color:var(--tx3)">Coming soon…</p>'))();
+}
+
+/* ══════════════════════════════════════════
+   DASHBOARD VIEWS
+══════════════════════════════════════════ */
+function renderDash(){
+  if(S.role==='MEDECIN') return dashMed();
+  if(S.role==='PATIENT') return dashPat();
+  if(S.role==='PHARMACIEN') return dashPharm();
+  return dashAdmin();
+}
+
+function dashMed(){return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('greet_med')} Martin 👋</h2>
+      <p style="font-size:12px;color:var(--tx3);margin-top:3px"><span class="ldot"></span> ${t('realtime')} · Apache Kafka</p>
+    </div>
+    <button class="btn btn-p" onclick="openCreateOrd()">
+      <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      ${t('new_ord')}
+    </button>
+  </div>
+  <div class="sgrid">
+    <div class="sbox">${logoWM(28)}<div class="snum">42</div><div class="slbl">${t('nav_ord')} · ${t('this_month')}</div><div class="sdelta">↑ +8</div></div>
+    <div class="sbox"><div class="snum">18</div><div class="slbl">${t('nav_patients')}</div><div class="sdelta">↑ +3</div></div>
+    <div class="sbox"><div class="snum">5</div><div class="slbl">${t('pending')}</div><div class="sdelta" style="color:var(--wn)">→</div></div>
+    <div class="sbox"><div class="snum">97%</div><div class="slbl">Validation</div><div class="sdelta">↑</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <div class="card">
+      <div class="ch"><div><div class="ct">${t('nav_ord')}</div><div class="cs">3 ${t('filter_active').toLowerCase()}</div></div><button class="btn btn-g btn-sm" onclick="setNav('ordonnances')">→</button></div>
+      ${miniOrd()}
+    </div>
+    <div class="card" style="position:relative;overflow:hidden">${logoWM(32)}
+      <div class="ch"><div class="ct">${t('nav_patients')}</div><button class="btn btn-g btn-sm" onclick="setNav('patients')">→</button></div>
+      ${miniPat()}
+    </div>
+  </div>`;}
+
+function dashPat(){return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('greet_pat')}</h2>
+      <p style="font-size:12px;color:var(--tx3);margin-top:3px">Paul Lambert · PAT-00142</p>
+    </div>
+    <button class="btn btn-p" onclick="setNav('pharmacies')">📍 ${t('nav_pharm')}</button>
+  </div>
+  <div class="card" style="position:relative;overflow:hidden">${logoWM(36)}
+    <div class="ch"><div class="ct">ORD-2025-00042</div><div class="badge bg-g">✓ ${t('valid')}</div></div>
+    <div class="flow-box">
+      <div class="fa"><div class="fav av-g">DM</div><div class="fn">Dr. Martin</div><div class="fr2">${t('doctor')}</div></div>
+      <div class="farr">→</div>
+      <div class="fa"><div class="fav av-b">PL</div><div class="fn">Paul Lambert</div><div class="fr2">${t('patient')}</div></div>
+      <div class="farr">→</div>
+      <div class="fa"><div class="fav av-o">PC</div><div class="fn">Pharmacie</div><div class="fr2">${t('pharmacist')}</div></div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:flex-start;flex-wrap:wrap">
+      <div style="flex:1;min-width:160px">
+        <p style="font-size:11px;color:var(--tx3);margin-bottom:10px">${tv('Valid until','Valide jusqu\'au')} <strong style="color:var(--tx2)">${tv('July 9, 2025','9 Juillet 2025')}</strong></p>
+        <div class="mc"><div style="flex:1"><div class="mn">Amoxicillin 500mg</div><div class="md">3×/${tv('day','jour')} · 7 ${tv('days','jours')}</div></div><div><div class="mqn">21</div><div class="mqu">${tv('tablets','comprimés')}</div></div></div>
+        <div class="mc"><div style="flex:1"><div class="mn">Ibuprofen 400mg</div><div class="md">2×/${tv('day','jour')} · 5 ${tv('days','jours')}</div></div><div><div class="mqn">10</div><div class="mqu">${tv('tablets','comprimés')}</div></div></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn btn-p" onclick="toast('📤 '+t('share')+'!')">${t('share')}</button>
+          <button class="btn btn-s" onclick="toast('QR downloaded !')">⬇ QR</button>
+        </div>
+      </div>
+      <div class="qrw" style="flex-shrink:0">
+        <svg width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="5" y="5" width="35" height="35" fill="none" stroke="#1a7d33" stroke-width="4"/><rect x="13" y="13" width="19" height="19" fill="#1a7d33"/><rect x="60" y="5" width="35" height="35" fill="none" stroke="#1565c0" stroke-width="4"/><rect x="68" y="13" width="19" height="19" fill="#1565c0"/><rect x="5" y="60" width="35" height="35" fill="none" stroke="#00bcd4" stroke-width="4"/><rect x="13" y="68" width="19" height="19" fill="#00bcd4"/></svg>
+        <div style="font-size:10px;color:#666;text-align:center;margin-top:4px">QR Code</div>
+      </div>
+    </div>
+  </div>`;}
+
+function dashPharm(){return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div><h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('greet_pharm')}</h2>
+    <p style="font-size:12px;color:var(--tx3)">Pharmacie Centrale · <span class="ldot"></span> ${t('online')}</p></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px">
+    <div class="card">
+      <div class="ch"><div class="ct">${t('scan_ord')}</div></div>
+      <div class="sf2b" style="margin-bottom:14px">
+        <div class="sc tl"></div><div class="sc tr"></div><div class="sc bl"></div><div class="sc br"></div>
+        <svg viewBox="0 0 24 24" fill="var(--tx3)" style="width:28px;height:28px"><path d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5z"/></svg>
+        <div class="scl"></div>
+        <span style="font-size:11px;color:var(--tx3)">${t('scan_instruction')}</span>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--tx3);margin-bottom:10px">— ${t('enter_code')} —</div>
+      <input class="fi" id="scan-inp" placeholder="ORD-2025-00042" style="text-align:center;font-family:'Crimson Pro',serif;font-size:16px;letter-spacing:2px;margin-bottom:10px"/>
+      <button class="btn btn-p btn-f" onclick="doScan()">${t('verify')}</button>
+    </div>
+    <div class="card" id="scan-result">
+      <div class="ch"><div class="ct">${t('verify')}</div></div>
+      <div style="text-align:center;padding:28px;color:var(--tx3);font-size:13px">${tv('Scan or enter a code','Scannez ou saisissez un code')}</div>
+    </div>
+  </div>
+  <div class="card" style="position:relative;overflow:hidden">${logoWM(28)}
+    <div class="ch"><div class="ct">${t('delivery_stats')}</div></div>
+    <div class="sgrid" style="margin-bottom:0">
+      <div class="sbox"><div class="snum">8</div><div class="slbl">${t('dispensed')}</div></div>
+      <div class="sbox"><div class="snum">3</div><div class="slbl">${t('pending')}</div></div>
+      <div class="sbox"><div class="snum">24</div><div class="slbl">${t('today_deliveries')}</div></div>
+      <div class="sbox"><div class="snum">0</div><div class="slbl">${t('rejected')}</div></div>
+    </div>
+  </div>`;}
+
+function dashAdmin(){return`
+  <div style="margin-bottom:18px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('greet_admin')}</h2>
+    <p style="font-size:12px;color:var(--tx3);margin-top:3px"><span class="ldot"></span> System operational · 99.8% uptime</p>
+  </div>
+  <div class="sgrid">
+    <div class="sbox">${logoWM(28)}<div class="snum">248</div><div class="slbl">Users</div><div class="sdelta">↑ +12</div></div>
+    <div class="sbox"><div class="snum">1204</div><div class="slbl">${t('nav_ord')}</div><div class="sdelta">↑ +89</div></div>
+    <div class="sbox"><div class="snum">32</div><div class="slbl">${t('nav_pharm')}</div></div>
+    <div class="sbox"><div class="snum">99.8%</div><div class="slbl">Uptime</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px">
+    <div class="card">
+      <div class="ch"><div class="ct">User Accounts</div><button class="btn btn-p btn-sm" onclick="openAddUser()">+ ${t('add')}</button></div>
+      <div style="overflow-x:auto"><table class="dtab"><thead><tr><th>Name</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>
+        ${[['Martin Dupuis','Doctor','Active','av-g'],['Sophie Bernard','Patient','Active','av-b'],['Paul Lambert','Pharmacist','Active','av-o'],['Marie Curie','Patient','Inactive','av-b']].map(([n,r,s,c])=>`<tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av av-s ${c}">${n.split(' ').map(w=>w[0]).join('')}</div><span style="color:var(--tx)">${n}</span></div></td><td>${r}</td><td><div class="badge ${s==='Active'?'bg-g':'bg-r'}">${s}</div></td><td><button class="btn btn-g btn-sm btn-ic" onclick="toast('${n} updated')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+    <div class="card" style="position:relative;overflow:hidden">${logoWM(32)}
+      <div class="ch"><div class="ct">Medication Catalog</div><button class="btn btn-p btn-sm" onclick="openAddMed()">+ ${t('add')}</button></div>
+      <div style="overflow-x:auto"><table class="dtab"><thead><tr><th>Name</th><th>Category</th><th>Status</th></tr></thead><tbody>
+        ${[['Amoxicillin 500mg','Antibiotic','Active'],['Paracetamol 1g','Analgesic','Active'],['Ibuprofen 400mg','Anti-inflam.','Active'],['Metformin 500mg','Antidiabetic','Inactive']].map(([n,c,s])=>`<tr><td style="color:var(--tx)">${n}</td><td>${c}</td><td><div class="badge ${s==='Active'?'bg-g':'bg-r'}">${s}</div></td></tr>`).join('')}
+      </tbody></table></div>
+    </div>
+  </div>`;}
+
+function miniOrd(){
+  const ords=[{code:'ORD-2025-00042',p:'Sophie Bernard',s:'ACTIVE',pct:0},{code:'ORD-2025-00041',p:'Paul Lambert',s:'PARTIELLE',pct:50},{code:'ORD-2025-00039',p:'Marie Curie',s:'TERMINEE',pct:100}];
+  const sc={ACTIVE:'bg-g',PARTIELLE:'bg-y',TERMINEE:'bg-b',EXPIREE:'bg-r'};
+  const sl={ACTIVE:t('valid'),PARTIELLE:t('partial'),TERMINEE:t('done'),EXPIREE:t('expired')};
+  return ords.map(o=>`<div class="oi" onclick="openOrdRP('${o.code}')"><div style="flex:1"><div class="oc">${o.code}</div><div class="op">${o.p}</div><div class="pbar"><div class="pfill" style="width:${o.pct}%"></div></div></div><div class="badge ${sc[o.s]}">${sl[o.s]}</div></div>`).join('');
+}
+function miniPat(){
+  const pts=[{av:'SB',c:'av-b',n:'Sophie Bernard',i:'3 prescriptions',iFr:'3 ordonnances',al:false},{av:'PL',c:'av-r',n:'Paul Lambert',i:'Allergy: Penicillin',iFr:'Allergie: Pénicilline',al:true},{av:'MC',c:'av-o',n:'Marie Curie',i:'1 prescription',iFr:'1 ordonnance',al:false}];
+  return pts.map(p=>`<div style="display:flex;align-items:center;gap:10px;padding:8px;border-radius:var(--r);cursor:pointer" onmouseover="this.style.background='var(--sf2)'" onmouseout="this.style.background=''" onclick="openPatRP('${p.n}')"><div class="av av-s ${p.c}">${p.av}</div><div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--tx)">${p.n}</div><div style="font-size:11px;color:${p.al?'var(--dn)':'var(--tx3)'}">${p.al?'⚠ ':''} ${tv(p.i,p.iFr)}</div></div><svg viewBox="0 0 24 24" fill="var(--tx3)" style="width:14px;height:14px"><path d="M9.29 6.71a.996.996 0 000 1.41L13.17 12l-3.88 3.88a.996.996 0 101.41 1.41l4.59-4.59a.996.996 0 000-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"/></svg></div>`).join('');
+}
+
+/* ══ ORDONNANCES ══ */
+function renderOrd(){
+  const ords=[{code:'ORD-2025-00042',p:'Sophie Bernard',date:tv('Apr 9','9 avr.'),s:'ACTIVE',pct:0},{code:'ORD-2025-00041',p:'Paul Lambert',date:tv('Apr 8','8 avr.'),s:'PARTIELLE',pct:50},{code:'ORD-2025-00039',p:'Marie Curie',date:tv('Apr 5','5 avr.'),s:'TERMINEE',pct:100},{code:'ORD-2025-00035',p:'Jean Dupont',date:tv('Apr 1','1 avr.'),s:'EXPIREE',pct:100}];
+  const sc={ACTIVE:'bg-g',PARTIELLE:'bg-y',TERMINEE:'bg-b',EXPIREE:'bg-r'};
+  const sl={ACTIVE:t('valid'),PARTIELLE:t('partial'),TERMINEE:t('done'),EXPIREE:t('expired')};
+  const f=S.ordFilter==='all'?ords:S.ordFilter==='active'?ords.filter(o=>o.s==='ACTIVE'):S.ordFilter==='partial'?ords.filter(o=>o.s==='PARTIELLE'):S.ordFilter==='done'?ords.filter(o=>o.s==='TERMINEE'):ords.filter(o=>o.s==='EXPIREE');
+  return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('nav_ord')}</h2>
+    ${S.role==='MEDECIN'?`<button class="btn btn-p" onclick="openCreateOrd()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>${t('new_ord')}</button>`:''}
+  </div>
+  <div class="ftabs">
+    <button class="ftab ${S.ordFilter==='all'?'on':''}" onclick="setOF('all')">${t('filter_all')}</button>
+    <button class="ftab ${S.ordFilter==='active'?'on':''}" onclick="setOF('active')">${t('filter_active')}</button>
+    <button class="ftab ${S.ordFilter==='partial'?'on':''}" onclick="setOF('partial')">${t('filter_partial')}</button>
+    <button class="ftab ${S.ordFilter==='done'?'on':''}" onclick="setOF('done')">${t('filter_done')}</button>
+    <button class="ftab ${S.ordFilter==='expired'?'on':''}" onclick="setOF('expired')">${t('filter_expired')}</button>
+  </div>
+  <div>${f.length===0?`<div style="text-align:center;padding:40px;color:var(--tx3)">${tv('No results','Aucun résultat')}</div>`:
+    f.map(o=>`<div class="oi" onclick="openOrdRP('${o.code}')"><div style="flex:1"><div class="oc">${o.code}</div><div class="op">${t('patient')}: ${o.p} · ${o.date}</div><div class="pbar"><div class="pfill" style="width:${o.pct}%"></div></div></div>
+    <div style="display:flex;align-items:center;gap:8px"><div class="badge ${sc[o.s]}">${sl[o.s]}</div>
+    ${S.role==='MEDECIN'&&o.s==='ACTIVE'?`<button class="btn btn-d btn-sm" onclick="event.stopPropagation();cancelOrd('${o.code}')">${t('cancelled')}</button>`:''}</div></div>`).join('')}
+  </div>`;
+}
+function setOF(f){S.ordFilter=f;renderContent();}
+
+/* ══ MESSAGES ══ */
+function renderMsg(){
+  const ct=CONTACTS[S.cContact];const conv=CONVS[S.cContact]||[];
+  return`<div style="display:flex;height:calc(100vh - 92px)">
+    <div style="width:260px;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--sf);flex-shrink:0;overflow:hidden">
+      <div style="padding:10px;border-bottom:1px solid var(--bd)"><input class="fi" placeholder="${t('search_msg')}" style="font-size:12px;padding:7px 10px"/></div>
+      <div style="flex:1;overflow-y:auto">
+        ${CONTACTS.map((c,i)=>`<div class="ci ${i===S.cContact?'on':''}" onclick="selC(${i})">
+          <div class="av av-m ${c.cls}">${c.av}</div>
+          <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--tx)">${c.name}</div><div style="font-size:11px;color:var(--tx3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;margin-top:1px">${S.lang==='fr'?c.prevFr:c.prev}</div></div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0"><div style="font-size:10px;color:var(--tx3)">${c.time}</div>${c.unread?`<div style="background:var(--pr);color:white;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600">${c.unread}</div>`:''}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;background:var(--mbg);min-width:0">
+      <div style="padding:11px 14px;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:10px">
+        <div class="av av-s ${ct.cls}">${ct.av}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--tx)">${ct.name}</div><div style="font-size:11px;color:var(--pr)"><span class="ldot"></span> ${t('online')}</div></div>
+        <button class="btn btn-g btn-sm btn-ic" onclick="toast('Call — WebRTC')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button>
+        <button class="btn btn-g btn-sm btn-ic" onclick="openPatRP('${ct.name}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
+      </div>
+      <div class="msgs" id="chat-msgs">
+        ${conv.map(m=>{
+          if(m.t==='sys') return`<div class="bsys">${S.lang==='fr'?m.txFr:m.tx}</div>`;
+          if(m.t==='in') return`<div class="bub bi"><div class="bfrom">${m.from}</div>${S.lang==='fr'?m.txFr:m.tx}<div class="btm">${m.tm}</div></div>`;
+          return`<div class="bub bo">${S.lang==='fr'?m.txFr:m.tx}<div class="btm">${m.tm}</div></div>`;
+        }).join('')}
+      </div>
+      <div class="cbar">
+        <textarea class="cinp" id="ci" rows="1" placeholder="${t('type_message')}" onkeydown="ck(event)"></textarea>
+        <button class="sbtn" onclick="sm()"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+      </div>
+    </div>
+  </div>`;
+}
+function selC(i){S.cContact=i;CONTACTS[i].unread=0;renderContent();setTimeout(()=>{const m=document.getElementById('chat-msgs');if(m)m.scrollTop=m.scrollHeight;},50);}
+function ck(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sm();}}
+function sm(){const inp=document.getElementById('ci');if(!inp||!inp.value.trim())return;const msgs=document.getElementById('chat-msgs');const d=document.createElement('div');d.className='bub bo';const now=new Date().toLocaleTimeString(S.lang==='fr'?'fr-FR':'en-US',{hour:'2-digit',minute:'2-digit'});d.innerHTML=inp.value+`<div class="btm">${now}</div>`;msgs.appendChild(d);msgs.scrollTop=msgs.scrollHeight;(CONVS[S.cContact]=CONVS[S.cContact]||[]).push({t:'out',tx:inp.value,txFr:inp.value,tm:now});inp.value='';toast(t('send')+' ✓');}
+
+/* ══ PATIENTS ══ */
+function renderPat(){return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('nav_patients')}</h2>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <input class="fi" placeholder="${t('search_pat')}" style="width:200px;font-size:12px;padding:7px 10px"/>
+      <button class="btn btn-p" onclick="openAddPat()">+ ${t('new_patient')}</button>
+    </div>
+  </div>
+  <div class="card"><div style="overflow-x:auto"><table class="dtab">
+    <thead><tr><th>${t('patient')}</th><th>ID</th><th>${tv('Allergy','Allergie')}</th><th>${tv('Last visit','Dernière consult.')}</th><th>${t('nav_ord')}</th><th></th></tr></thead>
+    <tbody>${[{av:'SB',c:'av-b',n:'Sophie Bernard',id:'PAT-00141',al:'—',d:tv('Apr 9','9 avr.'),o:3},{av:'PL',c:'av-r',n:'Paul Lambert',id:'PAT-00142',al:tv('Penicillin','Pénicilline'),d:tv('Apr 9','9 avr.'),o:4},{av:'MC',c:'av-o',n:'Marie Curie',id:'PAT-00143',al:'—',d:tv('Apr 5','5 avr.'),o:1},{av:'JD',c:'av-p',n:'Jean Dupont',id:'PAT-00144',al:tv('Aspirin','Aspirine'),d:tv('Apr 1','1 avr.'),o:2}].map(p=>`
+    <tr onclick="openPatRP('${p.n}')">
+      <td><div style="display:flex;align-items:center;gap:8px"><div class="av av-s ${p.c}">${p.av}</div><span style="color:var(--tx);font-weight:500">${p.n}</span></div></td>
+      <td>${p.id}</td><td>${p.al!=='—'?`<span style="color:var(--dn);font-weight:500">⚠ ${p.al}</span>`:p.al}</td>
+      <td>${p.d}</td><td><div class="badge bg-b">${p.o}</div></td>
+      <td><div style="display:flex;gap:4px">
+        <button class="btn btn-g btn-sm" onclick="event.stopPropagation();openCreateOrd('${p.n}')">${tv('Prescribe','Ordonner')}</button>
+        <button class="btn btn-g btn-sm btn-ic" onclick="event.stopPropagation();openPatRP('${p.n}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.29 6.71a.996.996 0 000 1.41L13.17 12l-3.88 3.88a.996.996 0 101.41 1.41l4.59-4.59a.996.996 0 000-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"/></svg></button>
+      </div></td>
+    </tr>`).join('')}
+    </tbody></table></div></div>`;}
+
+/* ══ PHARMACIES ══ */
+function renderPharm(){
+  const ph=[{n:'Pharmacie Centrale',d:'450 m',open:true,addr:tv('Crossroads Nlongkak','Carrefour Nlongkak')},{n:'Pharmacie du Nord',d:'1.2 km',open:true,addr:tv('Kennedy Ave','Avenue Kennedy')},{n:'Pharmacie Nlongkak',d:'2.1 km',open:false,addr:'Rue du Commerce'},{n:'Pharmacie Kennedy',d:'3.5 km',open:true,addr:"Bvd de l'URSS"}];
+  return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div><h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('nav_geo')} — ${t('nav_pharm')}</h2><p style="font-size:12px;color:var(--tx3);margin-top:3px">PostGIS · GPS</p></div>
+    <button class="btn btn-p" onclick="toast('${t('locate_me')} — PostGIS')">${t('locate_me')}</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="mapbox" style="height:280px;border-radius:var(--rl);border:none">
+        <div class="maplines"></div>
+        <svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" viewBox="0 0 600 280" preserveAspectRatio="none">
+          <path d="M0 140 Q150 100 300 120 Q450 140 600 110" stroke="var(--bd2)" stroke-width="12" fill="none" opacity=".5"/>
+          <path d="M100 0 Q120 140 110 280" stroke="var(--bd2)" stroke-width="8" fill="none" opacity=".4"/>
+          <path d="M400 0 Q390 140 410 280" stroke="var(--bd2)" stroke-width="8" fill="none" opacity=".4"/>
+        </svg>
+        <div class="mpin" style="top:42%;left:38%;z-index:3"><div class="mpin-d" style="background:var(--pr)"></div><div class="mpin-l">📍 ${tv('You','Vous')}</div></div>
+        <div class="mpin" style="top:55%;left:58%;z-index:3"><div class="mpin-d" style="background:var(--pr)"></div><div class="mpin-l" style="border-color:var(--pr);color:var(--prd)">★ Pharm. Centrale</div></div>
+        <div class="mpin" style="top:28%;left:65%;z-index:3"><div class="mpin-d" style="background:var(--if)"></div><div class="mpin-l">Nord</div></div>
+        <div style="position:absolute;top:8px;right:8px;z-index:3;display:flex;flex-direction:column;gap:2px">
+          <button onclick="toast('+')" style="width:26px;height:26px;background:var(--sf);border:1px solid var(--bd);border-radius:4px;cursor:pointer;font-weight:600;color:var(--tx2)">+</button>
+          <button onclick="toast('-')" style="width:26px;height:26px;background:var(--sf);border:1px solid var(--bd);border-radius:4px;cursor:pointer;font-weight:600;color:var(--tx2)">−</button>
+        </div>
+        <div style="position:absolute;bottom:8px;left:8px;background:var(--sf);border:1px solid var(--bd);border-radius:5px;padding:3px 7px;font-size:10px;color:var(--tx3);z-index:3">© OpenStreetMap · PostGIS</div>
+      </div>
+    </div>
+    <div><div class="sl">${tv('Nearby pharmacies','Pharmacies à proximité')}</div>
+      ${ph.map(p=>`<div class="card" style="padding:12px;margin-bottom:8px;cursor:pointer" onclick="toast('${p.n} — ${p.d}')"><div style="display:flex;align-items:center;gap:10px"><div style="width:36px;height:36px;background:var(--prl);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0"><svg viewBox="0 0 24 24" fill="var(--pr)" style="width:18px;height:18px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg></div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;color:var(--tx)">${p.n}</div><div style="font-size:11px;color:var(--tx3)">${p.addr}</div></div><div style="text-align:right;flex-shrink:0"><div style="font-family:'Crimson Pro',serif;font-size:15px;font-weight:600;color:var(--pr)">${p.d}</div><div class="badge ${p.open?'bg-g':'bg-r'}" style="margin-top:3px">${p.open?t('open_hours'):t('closed')}</div></div></div></div>`).join('')}
+    </div>
+  </div>`;}
+
+/* ══ NOTIFICATIONS ══ */
+function renderNotif(){
+  const ns=[
+    {t:tv('Prescription dispensed','Ordonnance délivrée'),b:tv('Paul Lambert picked up medications','Paul Lambert a récupéré ses médicaments'),time:'2 min',type:'success',read:false},
+    {t:tv('Appointment scheduled','Consultation planifiée'),b:tv('Sophie Bernard · Tomorrow 9:30am','Sophie Bernard · Demain 09h30'),time:'1 h',type:'info',read:false},
+    {t:tv('Prescription expiring soon','Ordonnance expire bientôt'),b:tv('ORD-2025-00035 expires in 5 days','ORD-2025-00035 expire dans 5 jours'),time:'3 h',type:'warn',read:false},
+    {t:tv('New patient registered','Nouveau patient enregistré'),b:tv('Marie Curie created her account','Marie Curie a créé son compte'),time:'5 h',type:'success',read:true},
+    {t:tv('Offline sync complete','Synchronisation hors ligne'),b:tv('Data synced after reconnection','Données synchronisées après reconnexion'),time:'8 h',type:'info',read:true}
+  ];
+  return`
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:10px">
+    <div><h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx)">${t('nav_notif')}</h2><p style="font-size:12px;color:var(--tx3);margin-top:3px"><span class="ldot"></span> Apache Kafka · ${t('realtime')}</p></div>
+    <button class="btn btn-g btn-sm" onclick="toast('${t('mark_all_read')}')">${t('mark_all_read')}</button>
+  </div>
+  <div class="card">${ns.map(n=>`<div style="display:flex;align-items:flex-start;gap:12px;padding:11px;border-radius:var(--r);cursor:pointer;${!n.read?'background:var(--prl);':''}border-bottom:1px solid var(--bd);transition:background .15s" onclick="this.style.background=''">
+    <div style="width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:${n.type==='success'?'var(--prl)':n.type==='warn'?'var(--wnbg)':'var(--ifbg)'}"><svg viewBox="0 0 24 24" fill="${n.type==='success'?'var(--pr)':n.type==='warn'?'var(--wn)':'var(--if)'}" style="width:16px;height:16px"><path d="${n.type==='success'?'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z':n.type==='warn'?'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z':'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z'}"/></svg></div>
+    <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:${!n.read?'600':'400'};color:var(--tx)">${n.t}</div><div style="font-size:11px;color:var(--tx3);margin-top:2px">${n.b}</div></div>
+    <div style="font-size:10px;color:var(--tx3);flex-shrink:0">${n.time}</div>
+  </div>`).join('')}</div>`;}
+
+/* ══ SETTINGS ══ */
+function renderSettings(){
+  const themes=[
+    {id:'light',label:t('theme_light'),c:['#25a244','#f0f2f5','#fff']},
+    {id:'dark',label:t('theme_dark'),c:['#00b894','#0d1e2b','#112233']},
+    {id:'ocean',label:t('theme_ocean'),c:['#1d6fa4','#e8f4fd','#fff']},
+    {id:'forest',label:t('theme_forest'),c:['#2d6a2d','#f0f4f0','#fff']}
+  ];
+  return`
+  <div style="max-width:680px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--tx);margin-bottom:22px">${t('settings_title')}</h2>
+
+    <div class="ss"><h3>👤 ${t('profile')}</h3>
+      <div class="card" style="margin-bottom:0;position:relative;overflow:hidden">${logoWM(44)}
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;flex-wrap:wrap">
+          <div class="av av-l ${ROLES[S.role].cls}">${ROLES[S.role].av}</div>
+          <div style="flex:1"><div style="font-size:16px;font-weight:600;color:var(--tx)">${{MEDECIN:'Dr. Martin Dupuis',PATIENT:'Paul Lambert',PHARMACIEN:'Pharmacie Centrale',ADMIN:'Administrator'}[S.role]}</div>
+          <div style="font-size:12px;color:var(--tx3)">${{MEDECIN:'dr.martin@hopital.cm',PATIENT:'paul.lambert@gmail.com',PHARMACIEN:'pharmacie@pharm.cm',ADMIN:'admin@ordonnance.cm'}[S.role]}</div>
+          <div style="margin-top:8px"><button class="btn btn-g btn-sm" onclick="toast('Photo updated !')">${tv('Change photo','Modifier la photo')}</button></div></div>
+        </div>
+        <div class="fr"><div class="fg" style="margin-bottom:0"><label class="fl">${tv('First name','Prénom')}</label><input class="fi" value="${S.role==='MEDECIN'?'Martin':'Paul'}"/></div>
+        <div class="fg" style="margin-bottom:0"><label class="fl">${tv('Last name','Nom')}</label><input class="fi" value="${S.role==='MEDECIN'?'Dupuis':'Lambert'}"/></div></div>
+        <div class="fg" style="margin-top:10px"><label class="fl">Phone</label><input class="fi" value="+237 612 345 678"/></div>
+        <div style="margin-top:12px"><button class="btn btn-p btn-sm" onclick="toast(t('save')+' ✓')">${t('save')}</button></div>
+      </div>
+    </div>
+
+    <div class="ss"><h3>🎨 ${t('appearance')}</h3>
+      <div class="tgrid">${themes.map(th=>`
+        <button class="tbtn ${S.theme===th.id?'sel':''}" onclick="applyTheme('${th.id}')">
+          <div class="tpv" style="background:${th.c[2]};border:2px solid ${th.c[0]}"></div>
+          <div style="flex:1;text-align:left">
+            <div style="font-weight:500">${th.label}</div>
+            <div style="display:flex;gap:3px;margin-top:2px">${th.c.map(c=>`<span style="width:12px;height:12px;border-radius:3px;background:${c};display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>`).join('')}</div>
+          </div>
+          ${S.theme===th.id?'<svg viewBox="0 0 24 24" fill="var(--pr)" style="width:14px;height:14px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>':''}
+        </button>`).join('')}
+      </div>
+    </div>
+
+    <div class="ss"><h3>🌐 ${t('language')}</h3>
+      <div class="lrow">
+        <button class="lbtn ${S.lang==='fr'?'sel':''}" onclick="applyLang('fr')"><span style="font-size:18px">🇫🇷</span> Français ${S.lang==='fr'?'✓':''}</button>
+        <button class="lbtn ${S.lang==='en'?'sel':''}" onclick="applyLang('en')"><span style="font-size:18px">🇬🇧</span> English ${S.lang==='en'?'✓':''}</button>
+      </div>
+    </div>
+
+    <div class="ss"><h3>🔔 ${t('notifications_s')}</h3>
+      ${[['notif',t('notif_push'),tv('Kafka real-time','Kafka temps réel')],['sound',tv('Sounds','Sons'),tv('Sound on notification','Son à chaque notification')],['preview',tv('Preview','Aperçu'),tv('Show in notifications','Afficher dans les notifications')]].map(([id,l,s])=>`
+      <div class="srow"><div><div class="srl">${l}</div><div class="srs">${s}</div></div><button class="tog ${S.togs[id]?'on':''}" onclick="togF('${id}',this)"></button></div>`).join('')}
+    </div>
+
+    <div class="ss"><h3>🔐 ${t('privacy')}</h3>
+      <div class="srow"><div><div class="srl">${t('activate_2fa')}</div><div class="srs">Google Authenticator / Authy</div></div><button class="btn btn-p btn-sm" onclick="open2FA()">${tv('Configure','Configurer')}</button></div>
+      <div class="srow"><div><div class="srl">${t('change_password')}</div><div class="srs">${tv('Last change: 30 days ago','Dernière modification : il y a 30 jours')}</div></div><button class="btn btn-g btn-sm" onclick="openCP()">${tv('Change','Modifier')}</button></div>
+      <div class="srow"><div><div class="srl">${t('active_sessions')}</div><div class="srs">${tv('1 active · Ubuntu · Firefox','1 active · Ubuntu · Firefox')}</div></div><button class="btn btn-d btn-sm" onclick="toast('${tv('All sessions closed','Toutes les sessions fermées')}')">${tv('Disconnect all','Déconnecter tout')}</button></div>
+    </div>
+
+    <div class="ss"><h3>☁️ ${tv('Storage & Sync','Stockage & Synchronisation')}</h3>
+      ${[['offline',t('offline'),tv('Access without internet','Accéder sans connexion')],['sync',tv('Auto-sync','Synchronisation auto'),tv('Sync when reconnected','Synchroniser à la reconnexion')]].map(([id,l,s])=>`
+      <div class="srow"><div><div class="srl">${l}</div><div class="srs">${s}</div></div><button class="tog ${S.togs[id]?'on':''}" onclick="togF('${id}',this)"></button></div>`).join('')}
+      <div class="srow"><div><div class="srl">${tv('Clear cache','Vider le cache')}</div><div class="srs">${tv('Free up local storage','Libérer l\'espace local')}</div></div><button class="btn btn-d btn-sm" onclick="toast('${tv('Cache cleared','Cache vidé')} ✓')">${tv('Clear','Vider')}</button></div>
+    </div>
+
+    <div class="ss"><h3>ℹ️ ${t('about')}</h3>
+      <div class="card" style="margin-bottom:0;position:relative;overflow:hidden">${logoWM(56)}
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div class="logo-badge" style="width:46px;height:46px;border-radius:11px;box-shadow:0 4px 16px rgba(0,0,0,.3)">
+            <svg width="30" height="30" viewBox="0 0 100 100" fill="none">
+              <defs>
+                <linearGradient id="gcab-s" x1="50" y1="20" x2="50" y2="90" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#e8f8ff"/><stop offset="100%" stop-color="#6090b8"/></linearGradient>
+                <linearGradient id="gcab-o" x1="44" y1="7" x2="57" y2="20" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#c0f4ff"/><stop offset="100%" stop-color="#00a8e0"/></linearGradient>
+                <linearGradient id="gcab-wl" x1="50" y1="28" x2="6" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+                <linearGradient id="gcab-wr" x1="50" y1="28" x2="94" y2="34" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#00e0f8"/><stop offset="100%" stop-color="#0055a0"/></linearGradient>
+              </defs>
+              <rect x="48" y="22" width="4" height="68" rx="2" fill="url(#gcab-s)"/>
+              <line x1="50" y1="22" x2="50" y2="90" stroke="rgba(255,255,255,.18)" stroke-width="1"/>
+              <circle cx="50" cy="14" r="10" fill="none" stroke="#00d0f0" stroke-width="1" opacity=".4"/>
+              <circle cx="50" cy="14" r="7.5" fill="url(#gcab-o)"/>
+              <circle cx="47.5" cy="11.5" r="2.5" fill="white" opacity=".45"/>
+              <path d="M49 30 Q36 12 7 16 Q18 23 33 28 Q16 32 7 40 Q26 36 49 35 Z" fill="url(#gcab-wl)" opacity=".45"/>
+              <path d="M49 30 Q39 15 16 18 Q26 24 38 29 Q22 33 16 39 Q34 35 49 34 Z" fill="#00b8e8" opacity=".7"/>
+              <path d="M49 30 Q43 19 26 21 Q34 26 42 30 Q32 33 26 37 Q40 34 49 34 Z" fill="#00d8f8" opacity=".9"/>
+              <path d="M51 30 Q64 12 93 16 Q82 23 67 28 Q84 32 93 40 Q74 36 51 35 Z" fill="url(#gcab-wr)" opacity=".45"/>
+              <path d="M51 30 Q61 15 84 18 Q74 24 62 29 Q78 33 84 39 Q66 35 51 34 Z" fill="#00b8e8" opacity=".7"/>
+              <path d="M51 30 Q57 19 74 21 Q66 26 58 30 Q68 33 74 37 Q60 34 51 34 Z" fill="#00d8f8" opacity=".9"/>
+              <path d="M50 35 C40 40,37 48,43 54 C49 60,60 56,50 49 C40 42,37 51,44 57 C51 63,55 72,50 78" stroke="#c8eeff" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <path d="M50 35 C60 40,63 48,57 54 C51 60,40 56,50 49 C60 42,63 51,56 57 C49 63,45 72,50 78" stroke="#50c8f0" stroke-width="3" fill="none" stroke-linecap="round"/>
+              <polygon points="48,88 50,94 52,88" fill="#90c0d8"/>
+            </svg>
+          </div>
+          <div><div style="font-size:15px;font-weight:600;color:var(--tx)">Ordonnance</div><div style="font-size:11px;color:var(--tx3)">v1.0.0 · 3GI 2025-2026</div></div>
+        </div>
+        <div class="chips">${['Next.js + React Native','Spring Boot 4.0','PostgreSQL 18 + PostGIS','Apache Kafka','Redis','Docker + Cloud','OAuth2 + JWT + 2FA','i18n FR/EN','PWA + Offline','Multi-tenant','Geolocation'].map(c=>`<span class="chip">✓ ${c}</span>`).join('')}</div>
+      </div>
+    </div>
+  </div>`;}
+
+/* ══ RIGHT PANEL ══ */
+function openOrdRP(code){
+  document.getElementById('rp-title').textContent = code;
+  document.getElementById('rp-body').innerHTML = `
+    <div class="badge bg-g" style="margin-bottom:12px">✓ ${t('valid')}</div>
+    <div class="flow-box" style="flex-direction:column;gap:8px;padding:10px">
+      <div style="font-size:10px;color:var(--tx3);text-transform:uppercase;font-weight:600;letter-spacing:.4px">${tv('Network flow','Flux réseau')}</div>
+      <div style="display:flex;align-items:center;gap:5px">
+        <div class="av av-s av-g">DM</div><div style="font-size:11px;color:var(--tx)">Dr. Martin</div>
+        <div style="font-size:16px;color:var(--pr)">→</div>
+        <div class="av av-s av-b">PL</div><div style="font-size:11px;color:var(--tx)">Patient</div>
+        <div style="font-size:16px;color:var(--pr)">→</div>
+        <div class="av av-s av-o">PC</div>
+      </div>
+    </div>
+    <p style="font-size:11px;color:var(--tx3);margin-bottom:10px">${tv('Expires:','Expiration :')} <strong style="color:var(--tx2)">${tv('Jul 9, 2025','9 Jul. 2025')}</strong></p>
+    <div class="mc"><div style="flex:1"><div class="mn">Amoxicillin 500mg</div><div class="md">3×/${tv('day','jour')} · 21</div><div class="pbar"><div class="pfill" style="width:0%"></div></div></div></div>
+    <div class="mc"><div style="flex:1"><div class="mn">Ibuprofen 400mg</div><div class="md">2×/${tv('day','jour')} · 10</div><div class="pbar"><div class="pfill" style="width:50%"></div></div></div></div>
+    <div class="qrw" style="text-align:center;margin:12px 0">
+      <svg width="90" height="90" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="5" y="5" width="35" height="35" fill="none" stroke="#1a7d33" stroke-width="4"/><rect x="13" y="13" width="19" height="19" fill="#1a7d33"/><rect x="60" y="5" width="35" height="35" fill="none" stroke="#1565c0" stroke-width="4"/><rect x="68" y="13" width="19" height="19" fill="#1565c0"/><rect x="5" y="60" width="35" height="35" fill="none" stroke="#00bcd4" stroke-width="4"/><rect x="13" y="68" width="19" height="19" fill="#00bcd4"/></svg>
+      <div style="font-size:10px;color:var(--tx3)">QR Code</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="btn btn-p btn-f" onclick="toast('📤 '+t('share')+'!')">${t('share')}</button>
+      <button class="btn btn-g btn-f" onclick="toast('QR downloaded !')">⬇ QR</button>
+      ${S.role==='MEDECIN'?`<button class="btn btn-d btn-f" onclick="cancelOrd('${code}')">${tv('Cancel','Annuler')}</button>`:''}
+    </div>`;
+  document.getElementById('rp').classList.remove('hidden');
+}
+
+function openPatRP(name){
+  const isAl = name==='Paul Lambert';
+  document.getElementById('rp-title').textContent = name;
+  document.getElementById('rp-body').innerHTML = `
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="av av-l ${isAl?'av-r':'av-b'}" style="margin:0 auto 10px">${name.split(' ').map(w=>w[0]).join('')}</div>
+      <div style="font-size:15px;font-weight:600;color:var(--tx)">${name}</div>
+      <div style="font-size:11px;color:var(--tx3)">PAT-00142 · 45 ${tv('years','ans')}</div>
+      ${isAl?`<div class="badge bg-r" style="margin-top:6px">⚠ ${tv('Allergy: Penicillin','Allergie: Pénicilline')}</div>`:''}
+    </div>
+    <div class="divider"></div>
+    ${[['Blood group','Groupe sanguin','A+'],['Last visit','Dernière consultation',tv('Apr 9, 2025','9 avr. 2025')],['Active prescriptions','Ordonnances actives','1'],['Total','Total','4']].map(([en,fr,v])=>`
+    <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--bd)"><span style="font-size:12px;color:var(--tx3)">${tv(en,fr)}</span><span style="font-size:12px;font-weight:500;color:var(--tx)">${v}</span></div>`).join('')}
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
+      <button class="btn btn-p btn-f" onclick="openCreateOrd('${name}');closeRP()">${t('new_prescription')}</button>
+      <button class="btn btn-g btn-f" onclick="toast('History of ${name}')">${tv('View history','Voir l\'historique')}</button>
+    </div>`;
+  document.getElementById('rp').classList.remove('hidden');
+}
+function closeRP(){ document.getElementById('rp').classList.add('hidden'); }
+
+/* ══ MODALS ══ */
+function openModal(html){
+  const ov=document.createElement('div');ov.className='ov';ov.id='mov';
+  ov.innerHTML=`<div class="mbox">${html}</div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)closeModal();});
+  document.body.appendChild(ov);
+}
+function closeModal(){ const m=document.getElementById('mov');if(m)m.remove(); }
+
+function openCreateOrd(pn=''){openModal(`<div class="mhdr"><div class="mt">✍️ ${t('new_ord')}</div><button class="mx" onclick="closeModal()">×</button></div>
+  <div class="fg"><label class="fl">${t('patient')}</label><select class="fs"><option>-- ${tv('Select','Sélectionner')} --</option>
+    <option ${pn==='Sophie Bernard'?'selected':''}>Sophie Bernard</option>
+    <option ${pn==='Paul Lambert'?'selected':''}>Paul Lambert</option>
+    <option ${pn==='Marie Curie'?'selected':''}>Marie Curie</option>
+    <option>Jean Dupont</option></select></div>
+  <div id="mls"><div style="background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:10px;margin-bottom:10px">
+    <div class="fr" style="margin-bottom:8px"><div><label class="fl">${tv('Medication','Médicament')}</label><select class="fs"><option>Amoxicillin 500mg</option><option>Paracetamol 1g</option><option>Ibuprofen 400mg</option></select></div><div><label class="fl">Dosage</label><input class="fi" value="500mg"/></div></div>
+    <div class="fr3"><div><label class="fl">${tv('Frequency','Fréquence')}</label><select class="fs"><option>3×/day</option><option>2×/day</option><option>1×/day</option></select></div><div><label class="fl">${tv('Duration','Durée')}</label><input class="fi" value="7 days"/></div><div><label class="fl">Qty</label><input class="fi" type="number" value="21"/></div></div>
+  </div></div>
+  <button onclick="addML()" style="width:100%;background:transparent;border:1px dashed var(--bd);border-radius:var(--r);padding:9px;color:var(--tx3);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;margin-bottom:12px">+ ${tv('Add medication','Ajouter médicament')}</button>
+  <div style="background:var(--prl);border-radius:var(--r);padding:10px;margin-bottom:14px;font-size:12px;color:var(--prd)">✍️ ${tv('Digital signature · OAuth2 + JWT','Signature numérique · OAuth2 + JWT')}</div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="subOrd()">${tv('Create','Créer')}</button></div>`);}
+
+function addML(){
+  const c=document.getElementById('mls');const d=document.createElement('div');
+  d.style.cssText='background:var(--sf2);border:1px solid var(--bd);border-radius:var(--r);padding:10px;margin-bottom:10px;position:relative';
+  d.innerHTML=`<button onclick="this.parentElement.remove()" style="position:absolute;top:6px;right:6px;background:var(--dnbg);border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--dn)">×</button>
+    <div class="fr" style="margin-bottom:8px"><div><label class="fl">${tv('Medication','Médicament')}</label><select class="fs"><option>Amoxicillin 500mg</option><option>Paracetamol 1g</option><option>Ibuprofen 400mg</option></select></div><div><label class="fl">Dosage</label><input class="fi" value="500mg"/></div></div>
+    <div class="fr3"><div><label class="fl">${tv('Frequency','Fréquence')}</label><select class="fs"><option>3×/day</option><option>2×/day</option></select></div><div><label class="fl">${tv('Duration','Durée')}</label><input class="fi" value="7 days"/></div><div><label class="fl">Qty</label><input class="fi" type="number" value="14"/></div></div>`;
+  c.appendChild(d);
+}
+function subOrd(){closeModal();const b=document.getElementById('ord-badge');if(b)b.textContent=parseInt(b.textContent)+1;toast('✅ ORD-2025-00043 — '+t('prescription_created')+' '+t('patient_notified'));}
+function openAddUser(){openModal(`<div class="mhdr"><div class="mt">${tv('Add user','Ajouter un utilisateur')}</div><button class="mx" onclick="closeModal()">×</button></div><div class="fr"><div class="fg"><label class="fl">${tv('First name','Prénom')}</label><input class="fi"/></div><div class="fg"><label class="fl">${tv('Last name','Nom')}</label><input class="fi"/></div></div><div class="fg"><label class="fl">Email</label><input class="fi" type="email"/></div><div class="fg"><label class="fl">Role</label><select class="fs"><option>${t('role_med')}</option><option>${t('role_pat')}</option><option>${t('role_pharm')}</option></select></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast(tv('Account created!','Compte créé !'))">${tv('Create','Créer')}</button></div>`);}
+function openAddPat(){openModal(`<div class="mhdr"><div class="mt">${t('new_patient')}</div><button class="mx" onclick="closeModal()">×</button></div><div class="fr"><div class="fg"><label class="fl">${tv('First name','Prénom')}</label><input class="fi"/></div><div class="fg"><label class="fl">${tv('Last name','Nom')}</label><input class="fi"/></div></div><div class="fr"><div class="fg"><label class="fl">${tv('Date of birth','Naissance')}</label><input class="fi" type="date"/></div><div class="fg"><label class="fl">${tv('Blood group','Groupe sanguin')}</label><select class="fs"><option>A+</option><option>A−</option><option>B+</option><option>O+</option><option>O−</option><option>AB+</option></select></div></div><div class="fg"><label class="fl">${tv('Known allergies','Allergies connues')}</label><input class="fi" placeholder="Penicillin…"/></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast(tv('Patient saved!','Patient enregistré !'))">${t('save')}</button></div>`);}
+function openAddMed(){openModal(`<div class="mhdr"><div class="mt">${tv('Add medication','Ajouter médicament')}</div><button class="mx" onclick="closeModal()">×</button></div><div class="fg"><label class="fl">Name</label><input class="fi"/></div><div class="fg"><label class="fl">INN</label><input class="fi"/></div><div class="fr"><div class="fg"><label class="fl">Form</label><select class="fs"><option>Tablet</option><option>Syrup</option><option>Injectable</option></select></div><div class="fg"><label class="fl">Category</label><select class="fs"><option>Antibiotic</option><option>Analgesic</option><option>Anti-inflam.</option></select></div></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('Added!')">${t('add')}</button></div>`);}
+function open2FA(){openModal(`<div class="mhdr"><div class="mt">🔐 ${t('activate_2fa')}</div><button class="mx" onclick="closeModal()">×</button></div><p style="font-size:13px;color:var(--tx2);margin-bottom:14px">${tv('Scan with Google Authenticator.','Scannez avec Google Authenticator.')}</p><div style="text-align:center;margin-bottom:14px"><div class="qrw" style="display:inline-block"><svg width="110" height="110" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="5" y="5" width="35" height="35" fill="none" stroke="#1a7d33" stroke-width="4"/><rect x="13" y="13" width="19" height="19" fill="#1a7d33"/><rect x="60" y="5" width="35" height="35" fill="none" stroke="#1565c0" stroke-width="4"/><rect x="68" y="13" width="19" height="19" fill="#1565c0"/><rect x="5" y="60" width="35" height="35" fill="none" stroke="#00bcd4" stroke-width="4"/><rect x="13" y="68" width="19" height="19" fill="#00bcd4"/></svg></div></div><div class="fg"><label class="fl">6-digit code</label><input class="fi" placeholder="000000" maxlength="6" style="text-align:center;font-family:'Crimson Pro',serif;font-size:22px;letter-spacing:5px"/></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('✅ 2FA Enabled !')">${tv('Enable','Activer')}</button></div>`);}
+function openCP(){openModal(`<div class="mhdr"><div class="mt">${t('change_password')}</div><button class="mx" onclick="closeModal()">×</button></div><div class="fg"><label class="fl">${tv('Current','Actuel')}</label><input class="fi" type="password"/></div><div class="fg"><label class="fl">${tv('New','Nouveau')}</label><input class="fi" type="password"/></div><div class="fg"><label class="fl">${tv('Confirm','Confirmer')}</label><input class="fi" type="password"/></div><div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast(tv('Updated!','Mis à jour !'))">${tv('Change','Modifier')}</button></div>`);}
+
+/* ══ SCAN PHARMACIEN ══ */
+function doScan(){
+  const code=(document.getElementById('scan-inp')||{value:'ORD-2025-00042'}).value||'ORD-2025-00042';
+  const box=document.getElementById('scan-result');if(!box)return;
+  box.innerHTML=`<div class="ch"><div class="ct">${code}</div><div class="badge bg-g">✓ ${t('valid')}</div></div>
+    <div style="display:flex;align-items:center;gap:10px;background:var(--sf2);border-radius:var(--r);padding:10px;margin-bottom:12px">
+      <div class="av av-m av-r">PL</div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--tx)">Paul Lambert</div><div style="font-size:11px;color:var(--dn)">⚠ ${tv('Allergy: Penicillin','Allergie: Pénicilline')}</div></div>
+    </div>
+    <div class="mc"><div style="flex:1"><div class="mn">Amoxicillin 500mg</div></div><div class="qc"><button class="qb" onclick="aQ(0,-1)">−</button><span class="qv" id="q0">${S.qty[0]}</span><button class="qb" onclick="aQ(0,1)">+</button></div></div>
+    <div class="mc"><div style="flex:1"><div class="mn">Ibuprofen 400mg</div></div><div class="qc"><button class="qb" onclick="aQ(1,-1)">−</button><span class="qv" id="q1">${S.qty[1]}</span><button class="qb" onclick="aQ(1,1)">+</button></div></div>
+    <button class="btn btn-p btn-f" style="margin-top:10px" onclick="confD()">${t('deliver')}</button>`;
+  toast(tv('Prescription verified','Ordonnance vérifiée'));
+}
+function aQ(i,d){S.qty[i]=Math.max(0,(S.qty[i]||0)+d);const e=document.getElementById('q'+i);if(e)e.textContent=S.qty[i];}
+function confD(){
+  const b=document.getElementById('scan-result');if(!b)return;
+  b.innerHTML=`<div style="text-align:center;padding:20px"><div style="width:60px;height:60px;background:var(--prl);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:2px solid var(--pr)"><svg viewBox="0 0 24 24" fill="var(--pr)" style="width:28px;height:28px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div><h3 style="font-family:'Crimson Pro',serif;font-size:20px;color:var(--tx);margin-bottom:6px">${t('delivery_done')}</h3><p style="font-size:12px;color:var(--tx3)">Paul Lambert · 31 dispensed</p><p style="font-size:12px;color:var(--pr);margin-top:4px"><span class="ldot"></span> ${t('doctor_notified')}</p><button class="btn btn-s" style="margin-top:14px" onclick="doScan()">${tv('New scan','Nouveau scan')}</button></div>`;
+  toast('✅ '+t('delivery_done'));
+}
+function cancelOrd(code){if(confirm(tv(`Cancel ${code}?`,`Annuler ${code} ?`))){toast(code+' '+t('cancelled'));closeRP();}}
+
+/* ══ HELPERS ══ */
+function toast(msg,dur=3000){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),dur);}
+function toggleDD(id){const m=document.getElementById(id);m.style.display=m.style.display==='none'?'block':'none';}
+function closeDD(id){const m=document.getElementById(id);if(m)m.style.display='none';}
+
+function applyTheme(th){
+  S.theme=th;
+  document.documentElement.setAttribute('data-theme',th);
+  // Le fond du splash sera automatiquement mis à jour via var(--bg)
+  // car le splash utilise background:var(--bg)
+  toast(tv('Theme: ','Thème : ')+t('theme_'+th));
+  renderContent();
+}
+
+function applyLang(lang){
+  S.lang=lang;
+  applyI18n();
+  toast(lang==='fr'?'Langue : Français':'Language: English');
+  renderContent();
+}
+
+function applyI18n(){
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const v=t(el.getAttribute('data-i'));
+    if(v) el.textContent=v;
+  });
+  const cr=document.getElementById('ucr');
+  if(cr) cr.textContent=S.lang==='fr'?ROLES[S.role].fr:ROLES[S.role].en;
+}
+
+function togF(id,btn){S.togs[id]=!S.togs[id];btn.classList.toggle('on',S.togs[id]);toast(S.togs[id]?tv('Enabled','Activé'):tv('Disabled','Désactivé'));}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd')) document.querySelectorAll('.dm').forEach(m=>m.style.display='none');
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Ordonnance — Plateforme Médicale</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Crimson+Pro:wght@400;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ═══════════════════════════════════════
+   THÈMES
+═══════════════════════════════════════ */
+:root,[data-theme="light"]{
+  --bg:#f0f2f5;--surface:#fff;--surface2:#f7f8fa;--surface3:#eef0f3;
+  --border:#e2e5ea;--border2:#cdd0d8;
+  --primary:#25a244;--primary-d:#1a7d33;--primary-l:#e8f5ec;--primary-m:#52c275;
+  --text:#1a1d23;--text2:#5a6070;--text3:#9aa0ad;
+  --danger:#e53935;--danger-bg:#fdecea;
+  --warn:#f59e0b;--warn-bg:#fffbeb;
+  --info:#2563eb;--info-bg:#eff6ff;
+  --shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(0,0,0,.11);
+  --sb:#fff;--hdr:#25a244;--hdr-txt:#fff;
+  --active-bg:#e8f5ec;--active-txt:#1a7d33;
+  --chat-in:#fff;--chat-out:#dcf8c6;--msg-bg:#f0f2f5;
+  --r:8px;--rl:12px;--rxl:16px;
+}
+[data-theme="dark"]{
+  --bg:#0d1e26;--surface:#132330;--surface2:#1a2f3a;--surface3:#1e3545;
+  --border:#1e3545;--border2:#274657;
+  --primary:#00b894;--primary-d:#00967a;--primary-l:#052820;--primary-m:#00cca3;
+  --text:#d4e8f0;--text2:#7aa8bc;--text3:#3a6070;
+  --danger:#ff6b6b;--danger-bg:#1a0f0f;
+  --warn:#feca57;--warn-bg:#1a1200;
+  --info:#54a0ff;--info-bg:#0d1a2e;
+  --shadow:0 1px 4px rgba(0,0,0,.4);--shadow-md:0 4px 20px rgba(0,0,0,.5);
+  --sb:#0f1c28;--hdr:#0f1c28;--hdr-txt:#d4e8f0;
+  --active-bg:#0a2a24;--active-txt:#00b894;
+  --chat-in:#1a2f3a;--chat-out:#0a2a24;--msg-bg:#0d1e26;
+}
+[data-theme="ocean"]{
+  --bg:#e8f4fd;--surface:#fff;--surface2:#f0f8ff;--surface3:#dbeafe;
+  --border:#bfdbfe;--border2:#93c5fd;
+  --primary:#1d6fa4;--primary-d:#145480;--primary-l:#dbeafe;--primary-m:#3b82f6;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --danger:#dc2626;--danger-bg:#fef2f2;
+  --warn:#d97706;--warn-bg:#fffbeb;
+  --info:#2563eb;--info-bg:#eff6ff;
+  --shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(29,111,164,.15);
+  --sb:#fff;--hdr:#1d6fa4;--hdr-txt:#fff;
+  --active-bg:#dbeafe;--active-txt:#1d4ed8;
+  --chat-in:#fff;--chat-out:#dbeafe;--msg-bg:#e8f4fd;
+}
+[data-theme="forest"]{
+  --bg:#f0f4f0;--surface:#fff;--surface2:#f4f7f4;--surface3:#e8efe8;
+  --border:#d1dcd1;--border2:#b8c9b8;
+  --primary:#2d6a2d;--primary-d:#1f4d1f;--primary-l:#e8f0e8;--primary-m:#4a9e4a;
+  --text:#1a2a1a;--text2:#4a5e4a;--text3:#8a9e8a;
+  --danger:#b91c1c;--danger-bg:#fef2f2;
+  --warn:#b45309;--warn-bg:#fffbeb;
+  --info:#1d4ed8;--info-bg:#eff6ff;
+  --shadow:0 1px 4px rgba(0,0,0,.07);--shadow-md:0 4px 16px rgba(45,106,45,.14);
+  --sb:#fff;--hdr:#2d6a2d;--hdr-txt:#fff;
+  --active-bg:#e8f0e8;--active-txt:#1f4d1f;
+  --chat-in:#fff;--chat-out:#e8f0e8;--msg-bg:#f0f4f0;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;transition:background-color .2s,color .2s,border-color .2s}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-size:14px}
+
+/* ═══ SPLASH / ANIMATION D'INTRO ═══ */
+#splash{position:fixed;inset:0;background:#0d1e26;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:0}
+#splash.fade-out{animation:splashFade .8s ease forwards}
+@keyframes splashFade{0%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.04)}}
+.splash-logo{width:80px;height:80px;background:linear-gradient(135deg,#00b894,#25a244);border-radius:22px;display:flex;align-items:center;justify-content:center;animation:logoIn .6s cubic-bezier(.34,1.56,.64,1) .2s both;box-shadow:0 0 40px rgba(0,184,148,.35)}
+@keyframes logoIn{from{opacity:0;transform:scale(.4) rotate(-20deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+.splash-logo svg{width:44px;height:44px;fill:white}
+.splash-title{font-family:'Crimson Pro',serif;font-size:36px;font-weight:700;color:#fff;animation:titleIn .5s ease .7s both;letter-spacing:.5px}
+@keyframes titleIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.splash-sub{font-size:13px;color:rgba(255,255,255,.45);animation:titleIn .5s ease .9s both;margin-top:6px}
+.splash-dots{display:flex;gap:7px;margin-top:32px;animation:titleIn .3s ease 1.1s both}
+.splash-dot{width:7px;height:7px;border-radius:50%;background:rgba(0,184,148,.4)}
+.splash-dot:nth-child(1){animation:dotPulse 1.2s ease 1.2s infinite}
+.splash-dot:nth-child(2){animation:dotPulse 1.2s ease 1.4s infinite}
+.splash-dot:nth-child(3){animation:dotPulse 1.2s ease 1.6s infinite}
+@keyframes dotPulse{0%,100%{background:rgba(0,184,148,.3);transform:scale(1)}50%{background:#00b894;transform:scale(1.4)}}
+.splash-line{width:180px;height:2px;background:rgba(255,255,255,.08);border-radius:1px;margin-top:22px;overflow:hidden;animation:titleIn .3s ease 1.1s both}
+.splash-progress{height:100%;background:linear-gradient(90deg,#00b894,#25a244);border-radius:1px;animation:progress 1.8s ease 1.1s forwards}
+@keyframes progress{from{width:0}to{width:100%}}
+
+/* ═══ APP LAYOUT ═══ */
+#app{display:flex;height:100vh;flex-direction:column;opacity:0;animation:appIn .5s ease forwards}
+@keyframes appIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* HEADER */
+#hdr{background:var(--hdr);color:var(--hdr-txt);padding:0 16px;height:52px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:var(--shadow-md);z-index:10}
+#hdr-l{display:flex;align-items:center;gap:10px}
+#ham{width:36px;height:36px;border:none;background:rgba(255,255,255,.15);border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--hdr-txt);flex-shrink:0;transition:background .15s}
+#ham:hover{background:rgba(255,255,255,.25)}
+#ham svg{width:18px;height:18px}
+.app-brand{display:flex;align-items:center;gap:8px}
+.brand-icon{width:28px;height:28px;background:rgba(255,255,255,.2);border-radius:6px;display:flex;align-items:center;justify-content:center}
+.brand-icon svg{width:16px;height:16px;fill:white}
+.brand-name{font-size:17px;font-weight:600;color:var(--hdr-txt)}
+#hdr-r{display:flex;align-items:center;gap:6px}
+.hb{width:34px;height:34px;background:rgba(255,255,255,.12);border:none;border-radius:8px;cursor:pointer;color:var(--hdr-txt);display:flex;align-items:center;justify-content:center;transition:background .15s}
+.hb:hover{background:rgba(255,255,255,.22)}
+.hb svg{width:17px;height:17px}
+#uchip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border:none;border-radius:20px;padding:4px 10px 4px 4px;cursor:pointer;color:var(--hdr-txt);transition:background .15s}
+#uchip:hover{background:rgba(255,255,255,.22)}
+#uchip-av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:white}
+.chip-name{font-size:12px;font-weight:500}
+.chip-role{font-size:10px;opacity:.75}
+.notif-dot{position:relative}
+.notif-dot::after{content:'';position:absolute;top:5px;right:5px;width:7px;height:7px;background:#ff6b6b;border-radius:50%;border:2px solid transparent}
+
+/* BODY */
+#body{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+#sb{width:240px;background:var(--sb);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;transition:width .25s cubic-bezier(.4,0,.2,1);z-index:5}
+#sb.col{width:56px}
+#sb-scroll{flex:1;overflow-y:auto;padding:8px 0}
+#sb-scroll::-webkit-scrollbar{width:3px}
+#sb-scroll::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.ns{padding:4px 8px;margin-top:4px}
+.nsl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--text3);padding:6px 8px 4px;white-space:nowrap;overflow:hidden}
+#sb.col .nsl{visibility:hidden}
+.ni{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:13px;font-weight:400;white-space:nowrap;overflow:hidden;position:relative;margin:1px 0;transition:background .15s,color .15s}
+.ni:hover{background:var(--surface3);color:var(--text)}
+.ni.on{background:var(--active-bg);color:var(--active-txt);font-weight:500}
+.ni svg{width:18px;height:18px;flex-shrink:0}
+.ni-txt{flex:1;overflow:hidden;text-overflow:ellipsis;transition:opacity .2s}
+#sb.col .ni-txt{opacity:0;width:0;overflow:hidden}
+.nbadge{background:var(--primary);color:white;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600;flex-shrink:0;transition:opacity .2s}
+#sb.col .nbadge{display:none}
+#sb-foot{padding:8px;border-top:1px solid var(--border)}
+.sfi{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--r);cursor:pointer;color:var(--text2);font-size:13px;white-space:nowrap;overflow:hidden;transition:background .15s}
+.sfi:hover{background:var(--surface3);color:var(--text)}
+.sfi svg{width:18px;height:18px;flex-shrink:0}
+#sb.col .sfi span{opacity:0;width:0;overflow:hidden}
+
+/* MAIN */
+#main{flex:1;display:flex;overflow:hidden}
+#panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#content{flex:1;overflow-y:auto;padding:20px}
+#content::-webkit-scrollbar{width:5px}
+#content::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* RIGHT PANEL */
+#rp{width:280px;background:var(--surface);border-left:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+#rp.hidden{display:none}
+#rp-hdr{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+#rp-body{flex:1;overflow-y:auto;padding:16px}
+#rp-body::-webkit-scrollbar{width:3px}
+#rp-body::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* ═══ COMPONENTS ═══ */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:14px;box-shadow:var(--shadow)}
+.ch{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ct{font-size:15px;font-weight:600;color:var(--text)}
+.cs{font-size:12px;color:var(--text3);margin-top:2px}
+.sl{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:10px}
+
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px}
+.sbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px;box-shadow:var(--shadow)}
+.snum{font-family:'Crimson Pro',serif;font-size:30px;font-weight:600;color:var(--primary);line-height:1}
+.slbl{font-size:11px;color:var(--text3);margin-top:4px}
+.sdelta{font-size:11px;color:var(--primary);margin-top:3px}
+
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:500}
+.bg-green{background:var(--primary-l);color:var(--primary-d);border:1px solid rgba(37,162,68,.2)}
+.bg-yellow{background:var(--warn-bg);color:var(--warn);border:1px solid rgba(245,158,11,.2)}
+.bg-red{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(229,57,53,.2)}
+.bg-blue{background:var(--info-bg);color:var(--info);border:1px solid rgba(37,99,235,.2)}
+.bg-gray{background:var(--surface3);color:var(--text3);border:1px solid var(--border)}
+
+.fi,.fs,.ft{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:9px 12px;color:var(--text);font-size:13px;font-family:'Inter',sans-serif;outline:none;transition:border .2s}
+.fi:focus,.fs:focus,.ft:focus{border-color:var(--primary)}
+.fs{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239aa0ad'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;background-size:18px;padding-right:30px}
+.ft{resize:vertical;min-height:72px}
+.fg{margin-bottom:14px}
+.fl{font-size:12px;font-weight:500;color:var(--text2);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.4px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+.btn{padding:9px 18px;border-radius:var(--r);border:none;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:all .15s}
+.btn-p{background:var(--primary);color:white}.btn-p:hover{background:var(--primary-d)}
+.btn-s{background:var(--surface);color:var(--text);border:1px solid var(--border)}.btn-s:hover{background:var(--surface3)}
+.btn-d{background:var(--danger-bg);color:var(--danger);border:1px solid rgba(229,57,53,.2)}.btn-d:hover{background:var(--danger);color:white}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-g:hover{background:var(--surface3);color:var(--text)}
+.btn-full{width:100%;justify-content:center}
+.btn-sm{padding:6px 12px;font-size:12px}
+.btn-icon{width:32px;height:32px;padding:0;justify-content:center;border-radius:var(--r)}
+.btn-icon svg{width:15px;height:15px}
+
+.dtab{width:100%;border-collapse:collapse}
+.dtab th{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--text3);padding:8px 12px;text-align:left;border-bottom:1px solid var(--border);background:var(--surface2)}
+.dtab td{padding:11px 12px;border-bottom:1px solid var(--border);font-size:13px;color:var(--text2)}
+.dtab tr:last-child td{border-bottom:none}
+.dtab tbody tr:hover td{background:var(--surface2);cursor:pointer}
+
+.oi{display:flex;align-items:center;gap:12px;padding:12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);margin-bottom:8px;cursor:pointer;transition:all .15s}
+.oi:hover{border-color:var(--primary);box-shadow:var(--shadow)}
+.ocode{font-family:'Crimson Pro',serif;font-size:16px;font-weight:600;color:var(--primary)}
+.opat{font-size:12px;color:var(--text3);margin-top:2px}
+.pbar{height:4px;background:var(--surface3);border-radius:2px;overflow:hidden;margin-top:6px;width:120px}
+.pfill{height:100%;background:var(--primary);border-radius:2px;transition:width .4s}
+
+.flow-box{display:flex;align-items:center;gap:8px;padding:14px;background:var(--primary-l);border-radius:var(--rl);margin-bottom:14px;border:1px solid rgba(37,162,68,.15)}
+.fa{text-align:center;flex:1}
+.fav{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:white;margin:0 auto 5px}
+.fn{font-size:11px;font-weight:600;color:var(--text)}
+.fr2{font-size:10px;color:var(--text3)}
+.farr{font-size:20px;color:var(--primary);flex-shrink:0}
+
+/* CHAT */
+.msgs{display:flex;flex-direction:column;gap:10px;padding:16px;flex:1;overflow-y:auto}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+.bub{max-width:72%;padding:9px 13px;border-radius:12px;font-size:13px;line-height:1.5}
+.bub-in{background:var(--chat-in);border:1px solid var(--border);align-self:flex-start;border-radius:3px 12px 12px 12px;color:var(--text)}
+.bub-out{background:var(--chat-out);align-self:flex-end;border-radius:12px 12px 3px 12px;color:var(--text)}
+.bub-sys{background:var(--surface3);align-self:center;font-size:11px;color:var(--text3);padding:5px 12px;border-radius:20px}
+.bub-from{font-size:10px;font-weight:600;color:var(--primary);margin-bottom:3px}
+.bub-time{font-size:10px;color:var(--text3);margin-top:4px;text-align:right}
+.chat-bar{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end;background:var(--surface)}
+.chat-inp{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:8px 14px;font-size:13px;font-family:'Inter',sans-serif;outline:none;color:var(--text);resize:none}
+.chat-inp:focus{border-color:var(--primary)}
+.send-btn{width:36px;height:36px;background:var(--primary);border:none;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.send-btn:hover{background:var(--primary-d)}
+.send-btn svg{width:16px;height:16px;fill:white}
+
+/* CONTACT LIST */
+.contact-item{display:flex;align-items:center;gap:10px;padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .15s;position:relative}
+.contact-item:hover{background:var(--surface2)}
+.contact-item.active{background:var(--active-bg)}
+.contact-name{font-size:13px;font-weight:500;color:var(--text)}
+.contact-prev{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px}
+.contact-time{font-size:10px;color:var(--text3)}
+.unread-badge{background:var(--primary);color:white;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:600}
+
+/* AVATAR */
+.av{border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;color:white;flex-shrink:0}
+.av-sm{width:32px;height:32px;font-size:11px}
+.av-md{width:40px;height:40px;font-size:13px}
+.av-lg{width:56px;height:56px;font-size:18px}
+.av-g{background:linear-gradient(135deg,#1a7d33,#3fb950)}
+.av-b{background:linear-gradient(135deg,#1e40af,#3b82f6)}
+.av-o{background:linear-gradient(135deg,#92400e,#f59e0b)}
+.av-r{background:linear-gradient(135deg,#991b1b,#ef4444)}
+.av-p{background:linear-gradient(135deg,#6d28d9,#a78bfa)}
+.av-t{background:linear-gradient(135deg,#0e7490,#06b6d4)}
+
+/* QR */
+.qrw{background:white;padding:10px;border-radius:8px;display:inline-block;border:1px solid #e0e0e0}
+
+/* SCANNER */
+.scan-frame{width:180px;height:180px;border:2px dashed var(--primary);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;margin:0 auto;position:relative;background:var(--surface2)}
+.sc-c{position:absolute;width:18px;height:18px;border-color:var(--primary-d);border-style:solid}
+.sc-c.tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.sc-c.tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-radius:0 4px 0 0}
+.sc-c.bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-radius:0 0 0 4px}
+.sc-c.br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+.scanl{height:2px;background:var(--primary);width:80%;border-radius:1px;animation:scanA 2s ease-in-out infinite}
+@keyframes scanA{0%{transform:translateY(-50px);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:translateY(50px);opacity:0}}
+
+/* MAP */
+.mapbox{height:180px;background:var(--surface2);border-radius:var(--rl);border:1px solid var(--border);position:relative;overflow:hidden}
+.maplines{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:28px 28px;opacity:.5}
+.mpin{position:absolute;transform:translate(-50%,-100%)}
+.mpin-dot{width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.mpin-label{background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:3px 7px;font-size:10px;font-weight:500;color:var(--text);white-space:nowrap;box-shadow:var(--shadow);margin-top:2px;text-align:center}
+.mzoom{position:absolute;bottom:10px;right:10px;display:flex;flex-direction:column;gap:2px}
+.mzoom button{width:26px;height:26px;background:var(--surface);border:1px solid var(--border);border-radius:4px;cursor:pointer;font-size:14px;font-weight:600;color:var(--text2);display:flex;align-items:center;justify-content:center}
+
+/* MED */
+.mc{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.mname{font-size:13px;font-weight:500;color:var(--text)}
+.mdetail{font-size:11px;color:var(--text3);margin-top:2px}
+.mqty-num{font-family:'Crimson Pro',serif;font-size:22px;font-weight:600;color:var(--primary);line-height:1}
+.mqty-u{font-size:10px;color:var(--text3)}
+.qctrl{display:flex;align-items:center;gap:6px}
+.qbtn{width:26px;height:26px;background:var(--surface);border:1px solid var(--border);border-radius:6px;cursor:pointer;font-size:15px;font-weight:600;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.qbtn:hover{border-color:var(--primary);color:var(--primary)}
+.qval{font-family:'Crimson Pro',serif;font-size:18px;font-weight:600;min-width:28px;text-align:center;color:var(--text)}
+
+/* LIVE DOT */
+.ldot{width:7px;height:7px;background:#22c55e;border-radius:50%;animation:ldpulse 2s infinite;display:inline-block}
+@keyframes ldpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+
+/* SETTINGS */
+.ss{margin-bottom:24px}
+.ss h3{font-size:13px;font-weight:600;color:var(--primary);margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px}
+.srow-l{font-size:13px;font-weight:500;color:var(--text)}
+.srow-s{font-size:11px;color:var(--text3);margin-top:2px}
+.tog{width:40px;height:22px;background:var(--border2);border-radius:11px;position:relative;cursor:pointer;transition:background .2s;flex-shrink:0;border:none}
+.tog.on{background:var(--primary)}
+.tog::after{content:'';position:absolute;width:16px;height:16px;background:white;border-radius:50%;top:3px;left:3px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.tog.on::after{left:21px}
+.theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tbtn{padding:10px 14px;border-radius:var(--r);border:2px solid var(--border);cursor:pointer;font-family:'Inter',sans-serif;font-size:12px;font-weight:500;background:var(--surface);color:var(--text);display:flex;align-items:center;gap:8px;transition:all .2s}
+.tbtn:hover,.tbtn.sel{border-color:var(--primary);background:var(--primary-l);color:var(--primary-d)}
+.tprev{width:20px;height:20px;border-radius:4px;flex-shrink:0;border:1px solid rgba(0,0,0,.1)}
+.lang-row{display:flex;gap:8px;margin-top:8px}
+.lbtn{padding:8px 18px;border-radius:var(--r);border:2px solid var(--border);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;font-weight:500;background:var(--surface);color:var(--text);transition:all .2s;display:flex;align-items:center;gap:6px}
+.lbtn:hover,.lbtn.sel{border-color:var(--primary);background:var(--primary-l);color:var(--primary-d)}
+
+/* MODAL */
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:100;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(3px)}
+.mbox{background:var(--surface);border-radius:var(--rxl);padding:24px;width:440px;max-width:92vw;box-shadow:var(--shadow-md);border:1px solid var(--border);animation:mIn .2s ease}
+@keyframes mIn{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
+.mhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.mt{font-size:16px;font-weight:600;color:var(--text)}
+.mx{width:28px;height:28px;background:var(--surface2);border:none;border-radius:6px;cursor:pointer;color:var(--text2);display:flex;align-items:center;justify-content:center;font-size:16px}
+.mx:hover{background:var(--surface3)}
+
+/* TOAST */
+#toast{position:fixed;bottom:20px;right:20px;background:var(--text);color:var(--surface);padding:11px 18px;border-radius:10px;font-size:13px;font-weight:500;z-index:200;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none;max-width:300px;box-shadow:var(--shadow-md)}
+#toast.show{opacity:1;transform:translateY(0)}
+
+/* DROPDOWN */
+.dd{position:relative;display:inline-block}
+.dm{position:absolute;top:calc(100% + 6px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--shadow-md);z-index:50;min-width:180px;overflow:hidden;animation:mIn .15s ease}
+.di{padding:9px 14px;font-size:13px;color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:9px;white-space:nowrap}
+.di:hover{background:var(--surface2);color:var(--text)}
+.di svg{width:15px;height:15px}
+.dsep{height:1px;background:var(--border);margin:4px 0}
+
+/* FILTER TABS */
+.ftabs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:4px;width:fit-content;margin-bottom:14px}
+.ftab{padding:6px 14px;border-radius:6px;border:none;background:transparent;color:var(--text3);font-family:'Inter',sans-serif;font-size:12px;cursor:pointer;font-weight:500;transition:all .2s}
+.ftab.on{background:var(--primary);color:white}
+.ftab:hover:not(.on){background:var(--surface3);color:var(--text)}
+
+/* LOGIN */
+#login{display:flex;align-items:center;justify-content:center;height:100vh;background:var(--bg)}
+.lwrap{background:var(--surface);border-radius:var(--rxl);box-shadow:var(--shadow-md);padding:36px;width:400px;border:1px solid var(--border)}
+.llogo{width:56px;height:56px;background:var(--primary);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px}
+.llogo svg{width:30px;height:30px;fill:white}
+.lt{font-family:'Crimson Pro',serif;font-size:28px;text-align:center;color:var(--text);margin-bottom:4px}
+.ls{font-size:12px;color:var(--text3);text-align:center;margin-bottom:24px}
+.rchips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin-bottom:20px}
+.rchip{padding:6px 14px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--text2);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.rchip.on{background:var(--primary);border-color:var(--primary);color:white;font-weight:500}
+
+/* CHIPS */
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.chip{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:500;background:var(--primary-l);color:var(--primary-d);border:1px solid rgba(37,162,68,.15)}
+.divider{height:1px;background:var(--border);margin:14px 0}
+</style>
+</head>
+<body>
+
+<div id="toast"></div>
+
+<!-- ═══ SPLASH ═══ -->
+<div id="splash">
+  <div class="splash-logo">
+    <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+  </div>
+  <div class="splash-title">Ordonnance</div>
+  <div class="splash-sub">Digital Medical Platform</div>
+  <div class="splash-line"><div class="splash-progress"></div></div>
+  <div class="splash-dots">
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+    <div class="splash-dot"></div>
+  </div>
+</div>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="login" style="display:none">
+  <div class="lwrap">
+    <div class="llogo"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+    <h1 class="lt">Ordonnance</h1>
+    <p class="ls" id="login-sub">Digital medical platform · OAuth2 · JWT · 2FA</p>
+    <div class="rchips" id="rchips">
+      <button class="rchip on" onclick="pickRole('MEDECIN',this)">🩺 <span data-i="role_med">Doctor</span></button>
+      <button class="rchip" onclick="pickRole('PATIENT',this)">🤒 <span data-i="role_pat">Patient</span></button>
+      <button class="rchip" onclick="pickRole('PHARMACIEN',this)">💊 <span data-i="role_pharm">Pharmacist</span></button>
+      <button class="rchip" onclick="pickRole('ADMIN',this)">🔐 Admin</button>
+    </div>
+    <div class="fg"><label class="fl" data-i="email">Email</label><input class="fi" id="lemail" value="dr.martin@hopital.cm"/></div>
+    <div class="fg" style="margin-bottom:20px"><label class="fl" data-i="password">Password</label><input class="fi" type="password" value="••••••••"/></div>
+    <div id="lerr" style="display:none;background:var(--danger-bg);border:1px solid rgba(229,57,53,.2);border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:13px;color:var(--danger)"></div>
+    <button class="btn btn-p btn-full" onclick="doLogin()"><span data-i="login_btn">Sign in</span></button>
+    <p style="text-align:center;font-size:11px;color:var(--text3);margin-top:12px">OAuth2 · JWT · 2FA · Secure · Multi-tenant</p>
+  </div>
+</div>
+
+<!-- ═══ APP ═══ -->
+<div id="app" style="display:none">
+  <div id="hdr">
+    <div id="hdr-l">
+      <button id="ham" onclick="toggleSB()">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/></svg>
+      </button>
+      <div class="app-brand">
+        <div class="brand-icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg></div>
+        <span class="brand-name">Ordonnance</span>
+      </div>
+    </div>
+    <div id="hdr-r">
+      <button class="hb" onclick="setNav('dashboard')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+      <button class="hb notif-dot" onclick="setNav('notifications')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg></button>
+      <div class="dd">
+        <button id="uchip" onclick="toggleDD('umenu')">
+          <div id="uchip-av" class="av av-sm av-g">DM</div>
+          <div style="text-align:left"><div class="chip-name" id="uchip-name">Dr. Martin</div><div class="chip-role" id="uchip-role">Doctor</div></div>
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:14px;height:14px;opacity:.7"><path d="M7 10l5 5 5-5z"/></svg>
+        </button>
+        <div class="dm" id="umenu" style="display:none">
+          <div class="di" onclick="setNav('settings');closeDD('umenu')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg><span data-i="my_profile">My profile</span></div>
+          <div class="di" onclick="setNav('settings');closeDD('umenu')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg><span data-i="settings">Settings</span></div>
+          <div class="dsep"></div>
+          <div class="di" style="color:var(--danger)" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg><span data-i="logout">Sign out</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="body">
+    <div id="sb">
+      <div id="sb-scroll">
+        <div class="ns">
+          <div class="nsl" data-i="nav_main">Main</div>
+          <div class="ni on" id="ni-dashboard" onclick="setNav('dashboard')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+            <span class="ni-txt" data-i="nav_dashboard">Dashboard</span>
+          </div>
+          <div class="ni" id="ni-ordonnances" onclick="setNav('ordonnances')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zM8 15h8v2H8zm0-3h8v2H8zm0-3h5v2H8z"/></svg>
+            <span class="ni-txt" data-i="nav_ord">Prescriptions</span>
+            <span class="nbadge" id="ord-badge">3</span>
+          </div>
+          <div class="ni" id="ni-messages" onclick="setNav('messages')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/></svg>
+            <span class="ni-txt" data-i="nav_msg">Messaging</span>
+            <span class="nbadge">2</span>
+          </div>
+        </div>
+        <div class="ns" id="ns-mgmt">
+          <div class="nsl" data-i="nav_mgmt">Management</div>
+          <div class="ni" id="ni-patients" onclick="setNav('patients')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <span class="ni-txt" data-i="nav_patients">Patients</span>
+          </div>
+          <div class="ni" id="ni-pharmacies" onclick="setNav('pharmacies')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span class="ni-txt" data-i="nav_pharm">Pharmacies</span>
+          </div>
+        </div>
+        <div class="ns">
+          <div class="nsl" data-i="nav_sys">System</div>
+          <div class="ni" id="ni-notifications" onclick="setNav('notifications')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z"/></svg>
+            <span class="ni-txt" data-i="nav_notif">Notifications</span>
+            <span class="nbadge">1</span>
+          </div>
+          <div class="ni" id="ni-geolocation" onclick="setNav('pharmacies')">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.94 11A8.994 8.994 0 0 0 13 3.06V1h-2v2.06A8.994 8.994 0 0 0 3.06 11H1v2h2.06A8.994 8.994 0 0 0 11 20.94V23h2v-2.06A8.994 8.994 0 0 0 20.94 13H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7zm0-11c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4z"/></svg>
+            <span class="ni-txt" data-i="nav_geo">Geolocation</span>
+          </div>
+        </div>
+      </div>
+      <div id="sb-foot">
+        <div class="sfi" onclick="setNav('settings')">
+          <svg viewBox="0 0 24 24" fill="currentColor" style="width:18px;height:18px;flex-shrink:0"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>
+          <span data-i="settings">Settings</span>
+        </div>
+      </div>
+    </div>
+
+    <div id="main">
+      <div id="panel">
+        <div id="content"></div>
+      </div>
+      <div id="rp" class="hidden">
+        <div id="rp-hdr">
+          <span style="font-size:13px;font-weight:600;color:var(--text)" id="rp-title">Details</span>
+          <button class="btn-icon btn-g" onclick="closeRP()"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+        </div>
+        <div id="rp-body"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════
+// TRANSLATIONS
+// ═══════════════════════════════════
+const TR = {
+  en:{
+    email:'Email',password:'Password',login_btn:'Sign in',login_sub:'Digital medical platform · OAuth2 · JWT · 2FA',
+    role_med:'Doctor',role_pat:'Patient',role_pharm:'Pharmacist',
+    nav_main:'Main',nav_dashboard:'Dashboard',nav_ord:'Prescriptions',nav_msg:'Messaging',
+    nav_mgmt:'Management',nav_patients:'Patients',nav_pharm:'Pharmacies',
+    nav_sys:'System',nav_notif:'Notifications',nav_geo:'Geolocation',settings:'Settings',
+    my_profile:'My profile',logout:'Sign out',
+    new_ord:'New prescription',scan_ord:'Scan prescription',deliver:'Dispense medications',
+    share:'Share',save:'Save',cancel:'Cancel',valid:'Valid',expired:'Expired',
+    partial:'Partial',done:'Completed',cancelled:'Cancelled',
+    all:'All',active:'Active',
+    patient:'Patient',doctor:'Doctor',pharmacist:'Pharmacist',
+    settings_title:'Settings',appearance:'Appearance',notifications_s:'Notifications',
+    privacy:'Privacy & Security',language:'Language',about:'About',
+    theme_light:'Light',theme_dark:'Dark (Navy)',theme_ocean:'Ocean',theme_forest:'Forest',
+    activate_2fa:'Enable 2FA',offline:'Offline mode',notif_push:'Push notifications',
+    realtime:'Real-time active',online:'Online',
+    search_patient:'Search a patient…',search_msg:'Search a conversation…',
+    open_hours:'Open',closed:'Closed',radius:'Radius',locate_me:'Locate me',
+    mark_all_read:'Mark all as read',
+    profile:'Profile',change_password:'Change password',active_sessions:'Active sessions',
+    prescription_created:'Prescription created!',patient_notified:'Patient notified.',
+    delivery_done:'Delivery recorded!',doctor_notified:'Doctor notified via Kafka.',
+    scan_instruction:'Scan the QR code',enter_code:'or enter the code',verify:'Verify prescription',
+    delivery_stats:'Today\'s deliveries',
+    greet_med:'Hello, Dr.',greet_pat:'My Prescriptions',greet_pharm:'Pharmacist Portal',greet_admin:'Administration',
+    this_month:'This month',today:'Today',
+    add:'Add',edit:'Edit',delete:'Delete',view:'View',
+    new_prescription:'New prescription',new_patient:'New patient',
+    today_deliveries:'Today\'s deliveries',pending:'Pending',rejected:'Rejected',dispensed:'Dispensed',
+    send:'Send',type_message:'Type a message…',
+    filter_all:'All',filter_active:'Active',filter_partial:'Partial',filter_done:'Done',filter_expired:'Expired',
+  },
+  fr:{
+    email:'Email',password:'Mot de passe',login_btn:'Se connecter',login_sub:'Plateforme médicale numérique · OAuth2 · JWT · 2FA',
+    role_med:'Médecin',role_pat:'Patient',role_pharm:'Pharmacien',
+    nav_main:'Principal',nav_dashboard:'Tableau de bord',nav_ord:'Ordonnances',nav_msg:'Messagerie',
+    nav_mgmt:'Gestion',nav_patients:'Patients',nav_pharm:'Pharmacies',
+    nav_sys:'Système',nav_notif:'Notifications',nav_geo:'Géolocalisation',settings:'Paramètres',
+    my_profile:'Mon profil',logout:'Déconnexion',
+    new_ord:'Nouvelle ordonnance',scan_ord:'Scanner une ordonnance',deliver:'Délivrer les médicaments',
+    share:'Partager',save:'Enregistrer',cancel:'Annuler',valid:'Valide',expired:'Expirée',
+    partial:'Partielle',done:'Terminée',cancelled:'Annulée',
+    all:'Toutes',active:'Actives',
+    patient:'Patient',doctor:'Médecin',pharmacist:'Pharmacien',
+    settings_title:'Paramètres',appearance:'Apparence',notifications_s:'Notifications',
+    privacy:'Confidentialité & Sécurité',language:'Langue',about:'À propos',
+    theme_light:'Clair',theme_dark:'Sombre (Navy)',theme_ocean:'Océan',theme_forest:'Forêt',
+    activate_2fa:'Activer la 2FA',offline:'Mode hors ligne',notif_push:'Notifications push',
+    realtime:'Temps réel actif',online:'En ligne',
+    search_patient:'Rechercher un patient…',search_msg:'Rechercher une conversation…',
+    open_hours:'Ouvert',closed:'Fermé',radius:'Rayon',locate_me:'Me localiser',
+    mark_all_read:'Tout marquer comme lu',
+    profile:'Profil',change_password:'Changer le mot de passe',active_sessions:'Sessions actives',
+    prescription_created:'Ordonnance créée !',patient_notified:'Patient notifié.',
+    delivery_done:'Délivrance enregistrée !',doctor_notified:'Médecin notifié via Kafka.',
+    scan_instruction:'Scanner le QR code',enter_code:'ou saisir le code',verify:'Vérifier l\'ordonnance',
+    delivery_stats:'Délivrances du jour',
+    greet_med:'Bonjour, Dr.',greet_pat:'Mes Ordonnances',greet_pharm:'Espace Pharmacien',greet_admin:'Administration',
+    this_month:'Ce mois',today:'Aujourd\'hui',
+    add:'Ajouter',edit:'Modifier',delete:'Supprimer',view:'Voir',
+    new_prescription:'Nouvelle ordonnance',new_patient:'Nouveau patient',
+    today_deliveries:'Délivrances aujourd\'hui',pending:'En attente',rejected:'Rejets',dispensed:'Médicaments remis',
+    send:'Envoyer',type_message:'Écrire un message…',
+    filter_all:'Toutes',filter_active:'Actives',filter_partial:'Partielles',filter_done:'Terminées',filter_expired:'Expirées',
+  }
+};
+
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+const S = {
+  role:'MEDECIN', nav:'dashboard', theme:'light', lang:'en',
+  sbOpen:true, currentContact:0, ordFilter:'all', qty:{0:21,1:10},
+  togStates:{notif:true,sound:false,preview:true,offline:true,sync:true}
+};
+
+const ROLES = {
+  MEDECIN:{label:'Doctor',labelFr:'Médecin',av:'DM',cls:'av-g'},
+  PATIENT:{label:'Patient',labelFr:'Patient',av:'PL',cls:'av-b'},
+  PHARMACIEN:{label:'Pharmacist',labelFr:'Pharmacien',av:'PC',cls:'av-o'},
+  ADMIN:{label:'Admin',labelFr:'Admin',av:'AD',cls:'av-r'}
+};
+
+const CONTACTS = [
+  {av:'DM',cls:'av-g',name:'Dr. Martin Dupuis',role:'MEDECIN',prev:'Here is your prescription.',prevFr:'Voici votre ordonnance.',time:'2 min',unread:1},
+  {av:'SB',cls:'av-b',name:'Sophie Bernard',role:'PATIENT',prev:'Thank you doctor!',prevFr:'Merci beaucoup docteur !',time:'10 min',unread:0},
+  {av:'PC',cls:'av-o',name:'Pharmacie Centrale',role:'PHARMACIEN',prev:'Prescription validated.',prevFr:'Ordonnance validée.',time:'30 min',unread:0},
+  {av:'PL',cls:'av-r',name:'Paul Lambert',role:'PATIENT',prev:"I have some questions…",prevFr:"J'ai des questions…",time:'1 h',unread:2},
+  {av:'JD',cls:'av-p',name:'Dr. Jean Dubois',role:'MEDECIN',prev:'Appointment tomorrow 9am',prevFr:'Consultation demain 9h',time:'3 h',unread:0}
+];
+
+const CONVERSATIONS = {
+  0:[
+    {type:'sys',text:'Conversation — April 9, 2025',textFr:'Conversation du 09 Avril 2025'},
+    {type:'in',from:'Dr. Martin Dupuis',text:'Hello Paul, here is your prescription ORD-2025-00042.',textFr:'Bonjour Paul, voici votre ordonnance ORD-2025-00042.',time:'09:31'},
+    {type:'out',text:'Thank you very much doctor!',textFr:'Merci beaucoup docteur !',time:'09:38'},
+    {type:'in',from:'Pharmacie Centrale',text:'Prescription received, medications being prepared.',textFr:'Ordonnance reçue, médicaments en préparation.',time:'10:05'},
+    {type:'out',text:'Perfect, I will be there in 10 minutes.',textFr:'Parfait, j\'arrive dans 10 minutes.',time:'10:08'}
+  ],
+  1:[
+    {type:'sys',text:'Conversation — April 8, 2025',textFr:'Conversation du 08 Avril 2025'},
+    {type:'out',text:'Sophie, your prescription has been sent.',textFr:'Sophie, votre ordonnance a été envoyée.',time:'14:20'},
+    {type:'in',from:'Sophie Bernard',text:'I received it, thank you!',textFr:'Je l\'ai bien reçue, merci !',time:'14:35'},
+    {type:'out',text:'Remember to follow the treatment for 7 days.',textFr:'N\'oubliez pas de suivre le traitement pendant 7 jours.',time:'14:36'}
+  ],
+  2:[
+    {type:'sys',text:'Today',textFr:"Aujourd'hui"},
+    {type:'in',from:'Pharmacie Centrale',text:'We have dispensed the medications for Mrs. Bernard.',textFr:'Nous avons délivré les médicaments pour Mme Bernard.',time:'09:15'},
+    {type:'out',text:'Good. Is the prescription ORD-00041 still valid?',textFr:'Bien. L\'ordonnance ORD-00041 est-elle encore valide ?',time:'09:20'},
+    {type:'in',from:'Pharmacie Centrale',text:'Yes, valid until July 2025.',textFr:'Oui, valide jusqu\'en juillet 2025.',time:'09:22'}
+  ],
+  3:[
+    {type:'sys',text:'Today',textFr:"Aujourd'hui"},
+    {type:'in',from:'Paul Lambert',text:'Doctor, I have questions about my treatment.',textFr:'Docteur, j\'ai des questions sur mon traitement.',time:'11:00'},
+    {type:'in',from:'Paul Lambert',text:'Can I take ibuprofen on an empty stomach?',textFr:'Est-ce que je peux prendre l\'ibuprofène à jeun ?',time:'11:01'},
+    {type:'out',text:'No, always take it with food to protect your stomach.',textFr:'Non, prenez-le toujours avec de la nourriture pour protéger l\'estomac.',time:'11:15'}
+  ],
+  4:[
+    {type:'sys',text:'Today',textFr:"Aujourd'hui"},
+    {type:'in',from:'Dr. Jean Dubois',text:'Hello colleague, can we discuss patient Lambert?',textFr:'Bonjour collègue, pouvons-nous parler du patient Lambert ?',time:'08:30'},
+    {type:'out',text:'Of course. He has a penicillin allergy, important to remember.',textFr:'Bien sûr. Il a une allergie à la pénicilline, important à retenir.',time:'08:45'},
+    {type:'in',from:'Dr. Jean Dubois',text:'Understood, thank you for the information.',textFr:'Compris, merci pour l\'information.',time:'08:50'}
+  ]
+};
+
+function t(k){ return (TR[S.lang]||TR.en)[k] || k; }
+function tv(enVal, frVal){ return S.lang==='fr' ? frVal : enVal; }
+
+// ═══════════════════════════════════
+// SPLASH → LOGIN → APP
+// ═══════════════════════════════════
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const sp = document.getElementById('splash');
+    sp.classList.add('fade-out');
+    setTimeout(() => {
+      sp.style.display = 'none';
+      document.getElementById('login').style.display = 'flex';
+    }, 800);
+  }, 2800);
+});
+
+function pickRole(r, btn){
+  S.role = r;
+  document.querySelectorAll('.rchip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const map = {MEDECIN:'dr.martin@hopital.cm',PATIENT:'paul.lambert@gmail.com',PHARMACIEN:'pharmacie.centrale@pharm.cm',ADMIN:'admin@ordonnance.cm'};
+  document.getElementById('lemail').value = map[r];
+}
+
+function doLogin(){
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  setupApp();
+}
+
+function doLogout(){
+  closeDD('umenu');
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+  toast(t('logout') + ' ✓');
+}
+
+function setupApp(){
+  const r = ROLES[S.role];
+  const av = document.getElementById('uchip-av');
+  av.textContent = r.av;
+  av.className = `av av-sm ${r.cls}`;
+  const names = {MEDECIN:'Dr. Martin',PATIENT:'Paul Lambert',PHARMACIEN:'Pharmacie Centrale',ADMIN:'Admin'};
+  document.getElementById('uchip-name').textContent = names[S.role];
+  document.getElementById('uchip-role').textContent = S.lang==='fr' ? r.labelFr : r.label;
+  const mgmt = document.getElementById('ns-mgmt');
+  mgmt.style.display = (S.role==='MEDECIN'||S.role==='ADMIN') ? '' : 'none';
+  applyI18n();
+  setNav('dashboard');
+}
+
+// ═══════════════════════════════════
+// SIDEBAR
+// ═══════════════════════════════════
+function toggleSB(){
+  S.sbOpen = !S.sbOpen;
+  document.getElementById('sb').classList.toggle('col', !S.sbOpen);
+}
+
+// ═══════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════
+function setNav(nav){
+  S.nav = nav;
+  document.querySelectorAll('.ni').forEach(e=>e.classList.remove('on'));
+  const el = document.getElementById('ni-'+nav);
+  if(el) el.classList.add('on');
+  closeRP();
+  renderContent();
+}
+
+// ═══════════════════════════════════
+// RENDER CONTENT
+// ═══════════════════════════════════
+function renderContent(){
+  const c = document.getElementById('content');
+  const map = {
+    dashboard:renderDash, ordonnances:renderOrd, messages:renderMsg,
+    patients:renderPat, pharmacies:renderPharm,
+    notifications:renderNotif, settings:renderSettings
+  };
+  c.innerHTML = (map[S.nav]||(() => '<div style="padding:40px;text-align:center;color:var(--text3)">Coming soon…</div>'))();
+}
+
+// ═══════════════════════════════════
+// DASHBOARD
+// ═══════════════════════════════════
+function renderDash(){
+  if(S.role==='MEDECIN') return dashMed();
+  if(S.role==='PATIENT') return dashPat();
+  if(S.role==='PHARMACIEN') return dashPharm();
+  return dashAdmin();
+}
+
+function dashMed(){
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('greet_med')} Martin 👋</h2>
+      <p style="font-size:12px;color:var(--text3);margin-top:3px"><span class="ldot"></span> ${t('realtime')} · Apache Kafka</p>
+    </div>
+    <button class="btn btn-p" onclick="openCreateOrd()">
+      <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+      ${t('new_ord')}
+    </button>
+  </div>
+  <div class="sgrid">
+    <div class="sbox"><div class="snum">42</div><div class="slbl">${t('nav_ord')} · ${t('this_month')}</div><div class="sdelta">↑ +8</div></div>
+    <div class="sbox"><div class="snum">18</div><div class="slbl">${t('nav_patients')}</div><div class="sdelta">↑ +3</div></div>
+    <div class="sbox"><div class="snum">5</div><div class="slbl">${t('pending')}</div><div class="sdelta" style="color:var(--warn)">→</div></div>
+    <div class="sbox"><div class="snum">97%</div><div class="slbl">Validation</div><div class="sdelta">↑</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="card">
+      <div class="ch"><div><div class="ct">${t('nav_ord')}</div><div class="cs">3 ${t('active').toLowerCase()}</div></div><button class="btn btn-g btn-sm" onclick="setNav('ordonnances')">→</button></div>
+      ${miniOrdList()}
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">${t('nav_patients')}</div><button class="btn btn-g btn-sm" onclick="setNav('patients')">→</button></div>
+      ${miniPatList()}
+    </div>
+  </div>`;
+}
+
+function dashPat(){
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div>
+      <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('greet_pat')}</h2>
+      <p style="font-size:12px;color:var(--text3);margin-top:3px">Paul Lambert · PAT-00142</p>
+    </div>
+    <button class="btn btn-p" onclick="setNav('pharmacies')">
+      <svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+      ${t('nav_pharm')}
+    </button>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">ORD-2025-00042</div><div class="badge bg-green">✓ ${t('valid')}</div></div>
+    <div class="flow-box">
+      <div class="fa"><div class="fav av-g">DM</div><div class="fn">Dr. Martin</div><div class="fr2">${t('doctor')}</div></div>
+      <div class="farr">→</div>
+      <div class="fa"><div class="fav av-b">PL</div><div class="fn">Paul Lambert</div><div class="fr2">${t('patient')}</div></div>
+      <div class="farr">→</div>
+      <div class="fa"><div class="fav av-o">PC</div><div class="fn">Pharmacie</div><div class="fr2">${t('pharmacist')}</div></div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:flex-start">
+      <div style="flex:1">
+        <p style="font-size:11px;color:var(--text3);margin-bottom:10px">${tv('Valid until','Valide jusqu\'au')} <strong style="color:var(--text2)">July 9, 2025</strong></p>
+        <div class="mc"><div style="flex:1"><div class="mname">Amoxicillin 500mg</div><div class="mdetail">3×/${tv('day','jour')} · 7 ${tv('days','jours')}</div></div><div><div class="mqty-num">21</div><div class="mqty-u">${tv('tablets','comprimés')}</div></div></div>
+        <div class="mc"><div style="flex:1"><div class="mname">Ibuprofen 400mg</div><div class="mdetail">2×/${tv('day','jour')} · 5 ${tv('days','jours')}</div></div><div><div class="mqty-num">10</div><div class="mqty-u">${tv('tablets','comprimés')}</div></div></div>
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-p" onclick="toast('${t('share')} — QR code copied !')">📤 ${t('share')}</button>
+          <button class="btn btn-s" onclick="toast('QR downloaded !')">⬇ QR</button>
+        </div>
+      </div>
+      <div class="qrw">
+        <svg width="110" height="110" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="5" y="5" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="12" y="12" width="21" height="21" fill="#222"/><rect x="60" y="5" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="67" y="12" width="21" height="21" fill="#222"/><rect x="5" y="60" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="12" y="67" width="21" height="21" fill="#222"/><rect x="60" y="60" width="5" height="5" fill="#222"/><rect x="70" y="60" width="5" height="5" fill="#222"/></svg>
+        <div style="font-size:10px;color:#666;text-align:center;margin-top:4px">QR Code</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function dashPharm(){
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div><h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('greet_pharm')}</h2>
+    <p style="font-size:12px;color:var(--text3)">Pharmacie Centrale · <span class="ldot"></span> ${t('online')}</p></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="card">
+      <div class="ch"><div class="ct">${t('scan_ord')}</div></div>
+      <div class="scan-frame" style="margin-bottom:14px">
+        <div class="sc-c tl"></div><div class="sc-c tr"></div><div class="sc-c bl"></div><div class="sc-c br"></div>
+        <svg viewBox="0 0 24 24" fill="var(--text3)" style="width:28px;height:28px"><path d="M9.5 6.5v3h-3v-3h3M11 5H5v6h6V5zm-1.5 9.5v3h-3v-3h3M11 13H5v6h6v-6zm6.5-6.5v3h-3v-3h3M19 5h-6v6h6V5z"/></svg>
+        <div class="scanl"></div>
+        <span style="font-size:11px;color:var(--text3)">${t('scan_instruction')}</span>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--text3);margin-bottom:10px">— ${t('enter_code')} —</div>
+      <input class="fi" id="scan-input" placeholder="ORD-2025-00042" style="text-align:center;font-family:'Crimson Pro',serif;font-size:16px;letter-spacing:2px;margin-bottom:10px"/>
+      <button class="btn btn-p btn-full" onclick="doScan()">${t('verify')}</button>
+    </div>
+    <div class="card" id="scan-result">
+      <div class="ch"><div class="ct">${t('verify')}</div></div>
+      <div style="text-align:center;padding:30px;color:var(--text3);font-size:13px">
+        <svg viewBox="0 0 24 24" fill="var(--border2)" style="width:40px;height:40px;display:block;margin:0 auto 10px"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z"/></svg>
+        ${tv('Scan or enter a code to display details','Scannez ou saisissez un code pour afficher les détails')}
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch"><div class="ct">${t('delivery_stats')}</div></div>
+    <div class="sgrid" style="margin-bottom:0">
+      <div class="sbox"><div class="snum">8</div><div class="slbl">${t('dispensed')}</div></div>
+      <div class="sbox"><div class="snum">3</div><div class="slbl">${t('pending')}</div></div>
+      <div class="sbox"><div class="snum">24</div><div class="slbl">${t('today_deliveries')}</div></div>
+      <div class="sbox"><div class="snum">0</div><div class="slbl">${t('rejected')}</div></div>
+    </div>
+  </div>`;
+}
+
+function dashAdmin(){
+  return `
+  <div style="margin-bottom:18px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('greet_admin')}</h2>
+    <p style="font-size:12px;color:var(--text3);margin-top:3px"><span class="ldot"></span> System operational · 99.8% uptime</p>
+  </div>
+  <div class="sgrid">
+    <div class="sbox"><div class="snum">248</div><div class="slbl">Users</div><div class="sdelta">↑ +12</div></div>
+    <div class="sbox"><div class="snum">1204</div><div class="slbl">${t('nav_ord')}</div><div class="sdelta">↑ +89</div></div>
+    <div class="sbox"><div class="snum">32</div><div class="slbl">${t('nav_pharm')}</div></div>
+    <div class="sbox"><div class="snum">99.8%</div><div class="slbl">Uptime</div><div class="sdelta">↑</div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="card">
+      <div class="ch"><div class="ct">User Accounts</div><button class="btn btn-p btn-sm" onclick="openAddUser()">+ ${t('add')}</button></div>
+      <table class="dtab"><thead><tr><th>Name</th><th>Role</th><th>Status</th><th></th></tr></thead><tbody>
+        ${[['Martin Dupuis','Doctor','Active','av-g'],['Sophie Bernard','Patient','Active','av-b'],['Paul Lambert','Pharmacist','Active','av-o'],['Marie Curie','Patient','Inactive','av-b']].map(([n,r,s,c])=>`
+        <tr><td><div style="display:flex;align-items:center;gap:8px"><div class="av av-sm ${c}">${n.split(' ').map(w=>w[0]).join('')}</div><span style="color:var(--text)">${n}</span></div></td>
+        <td>${r}</td><td><div class="badge ${s==='Active'?'bg-green':'bg-red'}">${s}</div></td>
+        <td><button class="btn btn-g btn-sm btn-icon" onclick="toast('${n} updated')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm12 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg></button></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="card">
+      <div class="ch"><div class="ct">Medication Catalog</div><button class="btn btn-p btn-sm" onclick="openAddMed()">+ ${t('add')}</button></div>
+      <table class="dtab"><thead><tr><th>Name</th><th>Category</th><th>Status</th></tr></thead><tbody>
+        ${[['Amoxicillin 500mg','Antibiotic','Active'],['Paracetamol 1g','Analgesic','Active'],['Ibuprofen 400mg','Anti-inflam.','Active'],['Metformin 500mg','Antidiabetic','Inactive']].map(([n,c,s])=>`
+        <tr><td style="color:var(--text)">${n}</td><td>${c}</td><td><div class="badge ${s==='Active'?'bg-green':'bg-red'}">${s}</div></td></tr>`).join('')}
+      </tbody></table>
+    </div>
+  </div>`;
+}
+
+function miniOrdList(){
+  const ords = [{code:'ORD-2025-00042',p:'Sophie Bernard',s:'ACTIVE',pct:0},{code:'ORD-2025-00041',p:'Paul Lambert',s:'PARTIELLE',pct:50},{code:'ORD-2025-00039',p:'Marie Curie',s:'TERMINEE',pct:100}];
+  const sc={ACTIVE:'bg-green',PARTIELLE:'bg-yellow',TERMINEE:'bg-blue',EXPIREE:'bg-red'};
+  const slbl={ACTIVE:t('valid'),PARTIELLE:t('partial'),TERMINEE:t('done'),EXPIREE:t('expired')};
+  return ords.map(o=>`
+    <div class="oi" onclick="openOrdRP('${o.code}')">
+      <div style="flex:1"><div class="ocode">${o.code}</div><div class="opat">${o.p}</div>
+        <div class="pbar"><div class="pfill" style="width:${o.pct}%"></div></div></div>
+      <div class="badge ${sc[o.s]}">${slbl[o.s]}</div>
+    </div>`).join('');
+}
+
+function miniPatList(){
+  const pts=[{av:'SB',c:'av-b',n:'Sophie Bernard',info:'3 prescriptions',infoFr:'3 ordonnances',allergy:false},{av:'PL',c:'av-r',n:'Paul Lambert',info:'Allergy: Penicillin',infoFr:'Allergie: Pénicilline',allergy:true},{av:'MC',c:'av-o',n:'Marie Curie',info:'1 prescription',infoFr:'1 ordonnance',allergy:false}];
+  return pts.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:9px;border-radius:var(--r);cursor:pointer" onmouseover="this.style.background='var(--surface2)'" onmouseout="this.style.background=''" onclick="openPatRP('${p.n}')">
+      <div class="av av-sm ${p.c}">${p.av}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">${p.n}</div>
+        <div style="font-size:11px;color:${p.allergy?'var(--danger)':'var(--text3)'}">${p.allergy?'⚠ ':''} ${tv(p.info,p.infoFr)}</div></div>
+      <button class="btn btn-g btn-sm btn-icon" onclick="event.stopPropagation();openPatRP('${p.n}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.29 6.71a.996.996 0 000 1.41L13.17 12l-3.88 3.88a.996.996 0 101.41 1.41l4.59-4.59a.996.996 0 000-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"/></svg></button>
+    </div>`).join('');
+}
+
+// ═══════════════════════════════════
+// ORDONNANCES PAGE
+// ═══════════════════════════════════
+function renderOrd(){
+  const ords=[
+    {code:'ORD-2025-00042',p:'Sophie Bernard',date:tv('Apr 9, 2025','09 avr. 2025'),s:'ACTIVE',pct:0},
+    {code:'ORD-2025-00041',p:'Paul Lambert',date:tv('Apr 8, 2025','08 avr. 2025'),s:'PARTIELLE',pct:50},
+    {code:'ORD-2025-00039',p:'Marie Curie',date:tv('Apr 5, 2025','05 avr. 2025'),s:'TERMINEE',pct:100},
+    {code:'ORD-2025-00035',p:'Jean Dupont',date:tv('Apr 1, 2025','01 avr. 2025'),s:'EXPIREE',pct:100},
+    {code:'ORD-2025-00030',p:'Sophie Bernard',date:tv('Mar 20, 2025','20 mars 2025'),s:'TERMINEE',pct:100}
+  ];
+  const sc={ACTIVE:'bg-green',PARTIELLE:'bg-yellow',TERMINEE:'bg-blue',EXPIREE:'bg-red'};
+  const slbl={ACTIVE:t('valid'),PARTIELLE:t('partial'),TERMINEE:t('done'),EXPIREE:t('expired')};
+  const filtered = S.ordFilter==='all' ? ords :
+    S.ordFilter==='active' ? ords.filter(o=>o.s==='ACTIVE') :
+    S.ordFilter==='partial' ? ords.filter(o=>o.s==='PARTIELLE') :
+    S.ordFilter==='done' ? ords.filter(o=>o.s==='TERMINEE') :
+    ords.filter(o=>o.s==='EXPIREE');
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('nav_ord')}</h2>
+    ${S.role==='MEDECIN'?`<button class="btn btn-p" onclick="openCreateOrd()"><svg viewBox="0 0 24 24" fill="currentColor" style="width:15px;height:15px"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>${t('new_ord')}</button>`:''}
+  </div>
+  <div class="ftabs">
+    <button class="ftab ${S.ordFilter==='all'?'on':''}" onclick="setOrdFilter('all',this)">${t('filter_all')}</button>
+    <button class="ftab ${S.ordFilter==='active'?'on':''}" onclick="setOrdFilter('active',this)">${t('filter_active')}</button>
+    <button class="ftab ${S.ordFilter==='partial'?'on':''}" onclick="setOrdFilter('partial',this)">${t('filter_partial')}</button>
+    <button class="ftab ${S.ordFilter==='done'?'on':''}" onclick="setOrdFilter('done',this)">${t('filter_done')}</button>
+    <button class="ftab ${S.ordFilter==='expired'?'on':''}" onclick="setOrdFilter('expired',this)">${t('filter_expired')}</button>
+  </div>
+  <div id="ord-list">
+    ${filtered.length===0?`<div style="text-align:center;padding:40px;color:var(--text3)">${tv('No prescriptions found','Aucune ordonnance trouvée')}</div>`:
+    filtered.map(o=>`
+    <div class="oi" onclick="openOrdRP('${o.code}')">
+      <div style="flex:1">
+        <div class="ocode">${o.code}</div>
+        <div class="opat">${t('patient')}: ${o.p} · ${o.date}</div>
+        <div class="pbar"><div class="pfill" style="width:${o.pct}%"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <div class="badge ${sc[o.s]}">${slbl[o.s]}</div>
+        ${(S.role==='MEDECIN'||S.role==='PATIENT')&&o.s==='ACTIVE'?`<button class="btn btn-d btn-sm" onclick="event.stopPropagation();cancelOrd('${o.code}')">${t('cancelled')}</button>`:''}
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function setOrdFilter(f){
+  S.ordFilter = f;
+  renderContent();
+}
+
+// ═══════════════════════════════════
+// MESSAGERIE — FONCTIONNELLE
+// ═══════════════════════════════════
+function renderMsg(){
+  const conv = CONVERSATIONS[S.currentContact]||[];
+  const ct = CONTACTS[S.currentContact];
+  return `
+  <div style="display:flex;height:calc(100vh - 92px)">
+    <!-- Liste contacts -->
+    <div style="width:268px;border-right:1px solid var(--border);display:flex;flex-direction:column;background:var(--surface);flex-shrink:0">
+      <div style="padding:12px;border-bottom:1px solid var(--border)">
+        <input class="fi" placeholder="${t('search_msg')}" style="font-size:12px;padding:7px 10px"/>
+      </div>
+      <div style="flex:1;overflow-y:auto">
+        ${CONTACTS.map((c,i)=>`
+        <div class="contact-item ${i===S.currentContact?'active':''}" onclick="selectContact(${i})">
+          <div class="av av-md ${c.cls}">${c.av}</div>
+          <div style="flex:1;min-width:0">
+            <div class="contact-name">${c.name}</div>
+            <div class="contact-prev">${S.lang==='fr'?c.prevFr:c.prev}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+            <div class="contact-time">${c.time}</div>
+            ${c.unread?`<div class="unread-badge">${c.unread}</div>`:''}
+          </div>
+        </div>`).join('')}
+      </div>
+    </div>
+    <!-- Zone conversation -->
+    <div style="flex:1;display:flex;flex-direction:column;background:var(--msg-bg)">
+      <!-- Header conversation -->
+      <div style="padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        <div class="av av-sm ${ct.cls}">${ct.av}</div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:500;color:var(--text)">${ct.name}</div>
+          <div style="font-size:11px;color:var(--primary)"><span class="ldot"></span> ${t('online')}</div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-g btn-sm btn-icon" title="${tv('Call','Appel')}" onclick="toast('${tv('Call','Appel')} — WebRTC / Spring Boot')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg></button>
+          <button class="btn btn-g btn-sm btn-icon" title="${tv('View profile','Voir profil')}" onclick="openPatRP('${ct.name}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg></button>
+        </div>
+      </div>
+      <!-- Messages -->
+      <div class="msgs" id="chat-msgs">
+        ${conv.map(m=>{
+          if(m.type==='sys') return `<div class="bub bub-sys">${S.lang==='fr'?m.textFr:m.text}</div>`;
+          if(m.type==='in') return `<div class="bub bub-in"><div class="bub-from">${m.from}</div>${S.lang==='fr'?m.textFr:m.text}<div class="bub-time">${m.time}</div></div>`;
+          return `<div class="bub bub-out">${S.lang==='fr'?m.textFr:m.text}<div class="bub-time">${m.time}</div></div>`;
+        }).join('')}
+      </div>
+      <!-- Input -->
+      <div class="chat-bar">
+        <textarea class="chat-inp" id="chat-inp" rows="1" placeholder="${t('type_message')}" onkeydown="chatKey(event)"></textarea>
+        <button class="send-btn" onclick="sendMsg()" title="${t('send')}"><svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function selectContact(i){
+  S.currentContact = i;
+  // Mark as read
+  CONTACTS[i].unread = 0;
+  renderContent();
+  // Scroll to bottom
+  setTimeout(()=>{const m=document.getElementById('chat-msgs');if(m)m.scrollTop=m.scrollHeight;},50);
+}
+
+function chatKey(e){ if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMsg();} }
+function sendMsg(){
+  const inp=document.getElementById('chat-inp');
+  if(!inp||!inp.value.trim()) return;
+  const msgs=document.getElementById('chat-msgs');
+  const d=document.createElement('div');
+  d.className='bub bub-out';
+  const now=new Date().toLocaleTimeString(S.lang==='fr'?'fr-FR':'en-US',{hour:'2-digit',minute:'2-digit'});
+  d.innerHTML=inp.value+`<div class="bub-time">${now}</div>`;
+  msgs.appendChild(d);
+  msgs.scrollTop=msgs.scrollHeight;
+  // Add to conversation history
+  (CONVERSATIONS[S.currentContact]=CONVERSATIONS[S.currentContact]||[]).push({type:'out',text:inp.value,textFr:inp.value,time:now});
+  inp.value='';
+  toast(t('send')+' ✓');
+}
+
+// ═══════════════════════════════════
+// PATIENTS
+// ═══════════════════════════════════
+function renderPat(){
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('nav_patients')}</h2>
+    <div style="display:flex;gap:8px">
+      <input class="fi" placeholder="${t('search_patient')}" style="width:220px;font-size:12px;padding:7px 12px"/>
+      <button class="btn btn-p" onclick="openAddPat()">+ ${t('new_patient')}</button>
+    </div>
+  </div>
+  <div class="card">
+    <table class="dtab">
+      <thead><tr><th>${t('patient')}</th><th>ID</th><th>${tv('Allergies','Allergies')}</th><th>${tv('Last visit','Dernière consultation')}</th><th>${t('nav_ord')}</th><th>${tv('Actions','Actions')}</th></tr></thead>
+      <tbody>
+        ${[
+          {av:'SB',c:'av-b',n:'Sophie Bernard',id:'PAT-00141',allergy:'—',date:tv('Apr 9','9 avr.'),ords:3},
+          {av:'PL',c:'av-r',n:'Paul Lambert',id:'PAT-00142',allergy:tv('Penicillin','Pénicilline'),date:tv('Apr 9','9 avr.'),ords:4},
+          {av:'MC',c:'av-o',n:'Marie Curie',id:'PAT-00143',allergy:'—',date:tv('Apr 5','5 avr.'),ords:1},
+          {av:'JD',c:'av-p',n:'Jean Dupont',id:'PAT-00144',allergy:tv('Aspirin','Aspirine'),date:tv('Apr 1','1 avr.'),ords:2}
+        ].map(p=>`
+        <tr onclick="openPatRP('${p.n}')">
+          <td><div style="display:flex;align-items:center;gap:9px"><div class="av av-sm ${p.c}">${p.av}</div><span style="color:var(--text);font-weight:500">${p.n}</span></div></td>
+          <td>${p.id}</td>
+          <td>${p.allergy!=='—'?`<span style="color:var(--danger);font-weight:500">⚠ ${p.allergy}</span>`:p.allergy}</td>
+          <td>${p.date}</td>
+          <td><div class="badge bg-blue">${p.ords}</div></td>
+          <td><div style="display:flex;gap:4px">
+            <button class="btn btn-g btn-sm" onclick="event.stopPropagation();openCreateOrd('${p.n}')">${tv('Prescribe','Ordonner')}</button>
+            <button class="btn btn-g btn-sm btn-icon" onclick="event.stopPropagation();openPatRP('${p.n}')"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.29 6.71a.996.996 0 000 1.41L13.17 12l-3.88 3.88a.996.996 0 101.41 1.41l4.59-4.59a.996.996 0 000-1.41L10.7 6.7c-.38-.38-1.02-.38-1.41.01z"/></svg></button>
+          </div></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// PHARMACIES / MAP
+// ═══════════════════════════════════
+function renderPharm(){
+  const pharms=[{n:'Pharmacie Centrale',d:'450 m',open:true,addr:tv('Crossroads Nlongkak','Carrefour Nlongkak')},{n:'Pharmacie du Nord',d:'1.2 km',open:true,addr:tv('Kennedy Avenue','Avenue Kennedy')},{n:'Pharmacie Nlongkak',d:'2.1 km',open:false,addr:tv('Commerce Street','Rue du Commerce')},{n:'Pharmacie Kennedy',d:'3.5 km',open:true,addr:tv('USSR Blvd','Bvd de l\'URSS')}];
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div><h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('nav_geo')} — ${t('nav_pharm')}</h2>
+    <p style="font-size:12px;color:var(--text3);margin-top:3px">PostGIS · GPS</p></div>
+    <button class="btn btn-p" onclick="toast('${t('locate_me')} — PostGIS activated')">${t('locate_me')}</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 320px;gap:14px">
+    <div class="card" style="padding:0;overflow:hidden">
+      <div class="mapbox" style="height:300px;border-radius:var(--rl);border:none">
+        <div class="maplines"></div>
+        <svg style="position:absolute;inset:0;width:100%;height:100%;z-index:1" viewBox="0 0 600 300" preserveAspectRatio="none">
+          <path d="M0 150 Q150 110 300 130 Q450 150 600 120" stroke="var(--border2)" stroke-width="12" fill="none" opacity=".5"/>
+          <path d="M100 0 Q120 150 110 300" stroke="var(--border2)" stroke-width="8" fill="none" opacity=".4"/>
+          <path d="M400 0 Q390 150 410 300" stroke="var(--border2)" stroke-width="8" fill="none" opacity=".4"/>
+        </svg>
+        <div class="mpin" style="top:42%;left:38%;z-index:3"><div class="mpin-dot" style="background:var(--primary)"></div><div class="mpin-label">📍 ${tv('You','Vous')}</div></div>
+        <div class="mpin" style="top:55%;left:58%;z-index:3"><div class="mpin-dot" style="background:var(--primary)"></div><div class="mpin-label" style="border-color:var(--primary);color:var(--primary-d)">★ Pharm. Centrale</div></div>
+        <div class="mpin" style="top:28%;left:65%;z-index:3"><div class="mpin-dot" style="background:var(--info)"></div><div class="mpin-label">Pharm. du Nord</div></div>
+        <div class="mzoom"><button onclick="toast('+')">+</button><button onclick="toast('−')">−</button></div>
+        <div style="position:absolute;bottom:8px;left:8px;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:3px 7px;font-size:10px;color:var(--text3);z-index:3">© OpenStreetMap · PostGIS</div>
+      </div>
+    </div>
+    <div>
+      <div class="sl">${tv('Nearby pharmacies','Pharmacies à proximité')}</div>
+      ${pharms.map(p=>`
+      <div class="card" style="padding:12px;margin-bottom:8px;cursor:pointer" onclick="toast('${p.n} — ${p.d}')">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="width:36px;height:36px;background:var(--primary-l);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+            <svg viewBox="0 0 24 24" fill="var(--primary)" style="width:18px;height:18px"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+          </div>
+          <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text)">${p.n}</div><div style="font-size:11px;color:var(--text3)">${p.addr}</div></div>
+          <div style="text-align:right">
+            <div style="font-family:'Crimson Pro',serif;font-size:15px;font-weight:600;color:var(--primary)">${p.d}</div>
+            <div class="badge ${p.open?'bg-green':'bg-red'}" style="margin-top:3px">${p.open?t('open_hours'):t('closed')}</div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// NOTIFICATIONS
+// ═══════════════════════════════════
+function renderNotif(){
+  const notifs=[
+    {t:tv('Prescription dispensed','Ordonnance délivrée'),b:tv('Paul Lambert picked up medications at Pharmacie Centrale','Paul Lambert a récupéré ses médicaments chez Pharmacie Centrale'),time:'2 min',type:'success',read:false},
+    {t:tv('Appointment scheduled','Consultation planifiée'),b:tv('Sophie Bernard · Tomorrow 9:30am','Sophie Bernard · Demain 09h30'),time:'1 h',type:'info',read:false},
+    {t:tv('Prescription expiring soon','Ordonnance expire bientôt'),b:tv('ORD-2025-00035 expires in 5 days','ORD-2025-00035 expire dans 5 jours'),time:'3 h',type:'warn',read:false},
+    {t:tv('New patient registered','Nouveau patient enregistré'),b:tv('Marie Curie created her account','Marie Curie a créé son compte patient'),time:'5 h',type:'success',read:true},
+    {t:tv('Offline sync complete','Synchronisation hors ligne'),b:tv('Data synced after reconnection','Données synchronisées après reconnexion'),time:'8 h',type:'info',read:true},
+  ];
+  return `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+    <div><h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text)">${t('nav_notif')}</h2>
+    <p style="font-size:12px;color:var(--text3);margin-top:3px"><span class="ldot"></span> Apache Kafka · ${t('realtime')}</p></div>
+    <button class="btn btn-g btn-sm" onclick="toast('${t('mark_all_read')}')">${t('mark_all_read')}</button>
+  </div>
+  <div class="card">
+    ${notifs.map((n,i)=>`
+    <div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border-radius:var(--r);cursor:pointer;${!n.read?'background:var(--primary-l);':''}border-bottom:1px solid var(--border);transition:background .15s" onclick="this.style.background='';toast('Read')">
+      <div style="width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:${n.type==='success'?'var(--primary-l)':n.type==='warn'?'var(--warn-bg)':'var(--info-bg)'}">
+        <svg viewBox="0 0 24 24" fill="${n.type==='success'?'var(--primary)':n.type==='warn'?'var(--warn)':'var(--info)'}" style="width:16px;height:16px"><path d="${n.type==='success'?'M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z':n.type==='warn'?'M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z':'M12 22c1.1 0 2-.9 2-2h-4c0 1.1.9 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z'}"/></svg>
+      </div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:${!n.read?'600':'400'};color:var(--text)">${n.t}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${n.b}</div></div>
+      <div style="font-size:10px;color:var(--text3);flex-shrink:0">${n.time}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════
+function renderSettings(){
+  const themes=[
+    {id:'light',label:t('theme_light'),colors:['#25a244','#f0f2f5','#ffffff']},
+    {id:'dark',label:t('theme_dark'),colors:['#00b894','#0d1e26','#132330']},
+    {id:'ocean',label:t('theme_ocean'),colors:['#1d6fa4','#e8f4fd','#ffffff']},
+    {id:'forest',label:t('theme_forest'),colors:['#2d6a2d','#f0f4f0','#ffffff']}
+  ];
+  return `
+  <div style="max-width:680px">
+    <h2 style="font-family:'Crimson Pro',serif;font-size:22px;color:var(--text);margin-bottom:22px">${t('settings_title')}</h2>
+
+    <div class="ss">
+      <h3>👤 ${t('profile')}</h3>
+      <div class="card" style="margin-bottom:0">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:16px">
+          <div class="av av-lg ${ROLES[S.role].cls}">${ROLES[S.role].av}</div>
+          <div style="flex:1">
+            <div style="font-size:16px;font-weight:600;color:var(--text)">${{MEDECIN:'Dr. Martin Dupuis',PATIENT:'Paul Lambert',PHARMACIEN:'Pharmacie Centrale',ADMIN:'Administrator'}[S.role]}</div>
+            <div style="font-size:12px;color:var(--text3)">${{MEDECIN:'dr.martin@hopital.cm',PATIENT:'paul.lambert@gmail.com',PHARMACIEN:'pharmacie.centrale@pharm.cm',ADMIN:'admin@ordonnance.cm'}[S.role]}</div>
+            <div style="margin-top:8px"><button class="btn btn-g btn-sm" onclick="toast('${tv('Upload profile photo','Photo de profil uploadée')}')">${tv('Change photo','Modifier la photo')}</button></div>
+          </div>
+        </div>
+        <div class="fr"><div class="fg" style="margin-bottom:0"><label class="fl">${tv('First name','Prénom')}</label><input class="fi" value="${S.role==='MEDECIN'?'Martin':'Paul'}"/></div><div class="fg" style="margin-bottom:0"><label class="fl">${tv('Last name','Nom')}</label><input class="fi" value="${S.role==='MEDECIN'?'Dupuis':'Lambert'}"/></div></div>
+        <div class="fg" style="margin-top:10px"><label class="fl">${tv('Phone','Téléphone')}</label><input class="fi" value="+237 612 345 678"/></div>
+        <div style="margin-top:12px"><button class="btn btn-p btn-sm" onclick="toast('${t('save')} ✓')">${t('save')}</button></div>
+      </div>
+    </div>
+
+    <div class="ss">
+      <h3>🎨 ${t('appearance')}</h3>
+      <div class="theme-grid">
+        ${themes.map(th=>`
+        <button class="tbtn ${S.theme===th.id?'sel':''}" onclick="applyTheme('${th.id}',this)">
+          <div class="tprev" style="background:${th.colors[2]};border:2px solid ${th.colors[0]}"></div>
+          <div style="flex:1;text-align:left">
+            <div style="font-weight:500">${th.label}</div>
+            <div style="font-size:11px;color:var(--text3);display:flex;gap:3px;margin-top:2px">${th.colors.map(c=>`<span style="width:13px;height:13px;border-radius:3px;background:${c};display:inline-block;border:1px solid rgba(0,0,0,.1)"></span>`).join('')}</div>
+          </div>
+          ${S.theme===th.id?'<svg viewBox="0 0 24 24" fill="var(--primary)" style="width:16px;height:16px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>':''}
+        </button>`).join('')}
+      </div>
+    </div>
+
+    <div class="ss">
+      <h3>🌐 ${t('language')}</h3>
+      <div class="lang-row">
+        <button class="lbtn ${S.lang==='fr'?'sel':''}" onclick="applyLang('fr',this)"><span style="font-size:20px">🇫🇷</span> Français ${S.lang==='fr'?'<svg viewBox="0 0 24 24" fill="var(--primary)" style="width:14px;height:14px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>':''}</button>
+        <button class="lbtn ${S.lang==='en'?'sel':''}" onclick="applyLang('en',this)"><span style="font-size:20px">🇬🇧</span> English ${S.lang==='en'?'<svg viewBox="0 0 24 24" fill="var(--primary)" style="width:14px;height:14px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>':''}</button>
+      </div>
+    </div>
+
+    <div class="ss">
+      <h3>🔔 ${t('notifications_s')}</h3>
+      ${[['notif',t('notif_push'),tv('Kafka real-time · Prescriptions','Kafka temps réel · Ordonnances')],['sound',tv('Sounds','Sons'),tv('Play sound on notification','Jouer un son à chaque notification')],['preview',tv('Message preview','Aperçu des messages'),tv('Show content in notifications','Afficher le contenu dans les notifications')]].map(([id,l,s])=>`
+      <div class="srow"><div><div class="srow-l">${l}</div><div class="srow-s">${s}</div></div><button class="tog ${S.togStates[id]?'on':''}" id="tog-${id}" onclick="toggleTog('${id}',this)"></button></div>`).join('')}
+    </div>
+
+    <div class="ss">
+      <h3>🔐 ${t('privacy')}</h3>
+      <div class="srow"><div><div class="srow-l">${t('activate_2fa')}</div><div class="srow-s">Google Authenticator / Authy</div></div><button class="btn btn-p btn-sm" onclick="open2FA()">${tv('Configure','Configurer')}</button></div>
+      <div class="srow"><div><div class="srow-l">${t('change_password')}</div><div class="srow-s">${tv('Last change: 30 days ago','Dernière modification : il y a 30 jours')}</div></div><button class="btn btn-g btn-sm" onclick="openChangePass()">${tv('Change','Modifier')}</button></div>
+      <div class="srow"><div><div class="srow-l">${t('active_sessions')}</div><div class="srow-s">${tv('1 active session · Ubuntu · Firefox','1 session active · Ubuntu · Firefox')}</div></div><button class="btn btn-d btn-sm" onclick="toast('${tv('All other sessions closed','Toutes les autres sessions fermées.')}')">${tv('Disconnect all','Déconnecter tout')}</button></div>
+    </div>
+
+    <div class="ss">
+      <h3>☁️ ${tv('Storage & Sync','Stockage & Synchronisation')}</h3>
+      ${[['offline',t('offline'),tv('Access prescriptions without internet','Accéder aux ordonnances sans connexion')],['sync',tv('Auto-sync','Synchronisation automatique'),tv('Sync when connection returns','Synchroniser dès que la connexion revient')]].map(([id,l,s])=>`
+      <div class="srow"><div><div class="srow-l">${l}</div><div class="srow-s">${s}</div></div><button class="tog ${S.togStates[id]?'on':''}" id="tog-${id}" onclick="toggleTog('${id}',this)"></button></div>`).join('')}
+      <div class="srow"><div><div class="srow-l">${tv('Clear local cache','Vider le cache local')}</div><div class="srow-s">${tv('Free up local storage','Libérer l\'espace de stockage local')}</div></div><button class="btn btn-d btn-sm" onclick="toast('${tv('Cache cleared','Cache vidé')} ✓')">${tv('Clear','Vider')}</button></div>
+    </div>
+
+    <div class="ss">
+      <h3>ℹ️ ${t('about')}</h3>
+      <div class="card" style="margin-bottom:0">
+        <div class="chips">
+          ${['Next.js + React Native','Spring Boot 4.0','PostgreSQL 18 + PostGIS','Apache Kafka','Redis','Docker + Cloud','OAuth2 + JWT + 2FA','i18n FR/EN','PWA + Offline','Multi-tenant','Geolocation'].map(c=>`<span class="chip">✓ ${c}</span>`).join('')}
+        </div>
+        <p style="font-size:12px;color:var(--text3)">v1.0.0 · 3GI 2025-2026 · ${tv('Digital Prescription Platform','Projet Ordonnance Numérique')}</p>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ═══════════════════════════════════
+// RIGHT PANEL
+// ═══════════════════════════════════
+function openOrdRP(code){
+  document.getElementById('rp-title').textContent = code;
+  document.getElementById('rp-body').innerHTML = `
+    <div class="badge bg-green" style="margin-bottom:12px">✓ ${t('valid')}</div>
+    <div class="flow-box" style="flex-direction:column;gap:8px;padding:10px">
+      <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.4px">${tv('Network flow','Flux réseau')}</div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="av av-sm av-g">DM</div><div style="font-size:12px;color:var(--text)">Dr. Martin</div>
+        <div style="font-size:18px;color:var(--primary)">→</div>
+        <div class="av av-sm av-b">PL</div><div style="font-size:12px;color:var(--text)">Patient</div>
+        <div style="font-size:18px;color:var(--primary)">→</div>
+        <div class="av av-sm av-o">PC</div>
+      </div>
+    </div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:10px">${tv('Expires','Expiration')}: <strong style="color:var(--text2)">${tv('Jul 9, 2025','9 Jul. 2025')}</strong></div>
+    <div class="mc"><div style="flex:1"><div class="mname">Amoxicillin 500mg</div><div class="mdetail">3×/${tv('day','jour')} · 21 ${tv('tablets','comprimés')}</div><div class="pbar"><div class="pfill" style="width:0%"></div></div></div></div>
+    <div class="mc"><div style="flex:1"><div class="mname">Ibuprofen 400mg</div><div class="mdetail">2×/${tv('day','jour')} · 10 ${tv('tablets','comprimés')}</div><div class="pbar"><div class="pfill" style="width:50%"></div></div></div></div>
+    <div class="qrw" style="text-align:center;margin:12px 0"><svg width="90" height="90" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="5" y="5" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="12" y="12" width="21" height="21" fill="#222"/><rect x="60" y="5" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="67" y="12" width="21" height="21" fill="#222"/><rect x="5" y="60" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="12" y="67" width="21" height="21" fill="#222"/></svg><div style="font-size:10px;color:var(--text3)">QR Code</div></div>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <button class="btn btn-p btn-full" onclick="toast('📤 ${t('share')} !')">${t('share')}</button>
+      <button class="btn btn-g btn-full" onclick="toast('⬇ QR downloaded !')">⬇ ${tv('Download QR','Télécharger QR')}</button>
+      ${S.role==='MEDECIN'?`<button class="btn btn-d btn-full" onclick="cancelOrd('${code}')">${tv('Cancel prescription','Annuler l\'ordonnance')}</button>`:''}
+    </div>`;
+  document.getElementById('rp').classList.remove('hidden');
+}
+
+function openPatRP(name){
+  const isAllergy = name==='Paul Lambert';
+  document.getElementById('rp-title').textContent = name;
+  document.getElementById('rp-body').innerHTML = `
+    <div style="text-align:center;margin-bottom:16px">
+      <div class="av av-lg ${isAllergy?'av-r':'av-b'}" style="margin:0 auto 10px">${name.split(' ').map(w=>w[0]).join('')}</div>
+      <div style="font-size:15px;font-weight:600;color:var(--text)">${name}</div>
+      <div style="font-size:11px;color:var(--text3)">PAT-00142 · 45 ${tv('years','ans')}</div>
+      ${isAllergy?`<div class="badge bg-red" style="margin-top:6px">⚠ ${tv('Allergy: Penicillin','Allergie: Pénicilline')}</div>`:''}
+    </div>
+    <div class="divider"></div>
+    ${[['Blood group','Groupe sanguin','A+'],['Last visit','Dernière consultation',tv('Apr 9, 2025','9 avr. 2025')],['Active prescriptions','Ordonnances actives','1'],['Total prescriptions','Total ordonnances','4']].map(([en,fr,v])=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:12px;color:var(--text3)">${tv(en,fr)}</span>
+      <span style="font-size:12px;font-weight:500;color:var(--text)">${v}</span>
+    </div>`).join('')}
+    <div style="display:flex;flex-direction:column;gap:6px;margin-top:14px">
+      <button class="btn btn-p btn-full" onclick="openCreateOrd('${name}');closeRP()">${t('new_prescription')}</button>
+      <button class="btn btn-g btn-full" onclick="toast('${tv('History of','Historique de')} ${name}')">${tv('View history','Voir l\'historique')}</button>
+    </div>`;
+  document.getElementById('rp').classList.remove('hidden');
+}
+
+function closeRP(){ document.getElementById('rp').classList.add('hidden'); }
+
+// ═══════════════════════════════════
+// MODALS
+// ═══════════════════════════════════
+function openModal(html){
+  const ov=document.createElement('div');
+  ov.className='ov';ov.id='modal-ov';
+  ov.innerHTML=`<div class="mbox">${html}</div>`;
+  ov.addEventListener('click',e=>{if(e.target===ov)closeModal();});
+  document.body.appendChild(ov);
+}
+function closeModal(){ const m=document.getElementById('modal-ov');if(m)m.remove(); }
+
+function openCreateOrd(patientName=''){
+  openModal(`
+    <div class="mhdr"><div class="mt">✍️ ${t('new_ord')}</div><button class="mx" onclick="closeModal()">×</button></div>
+    <div class="fg"><label class="fl">${t('patient')}</label>
+    <select class="fs" id="op"><option value="">-- ${tv('Select a patient','Sélectionner un patient')} --</option>
+    <option ${patientName==='Sophie Bernard'?'selected':''}>Sophie Bernard</option>
+    <option ${patientName==='Paul Lambert'?'selected':''}>Paul Lambert</option>
+    <option ${patientName==='Marie Curie'?'selected':''}>Marie Curie</option>
+    <option>Jean Dupont</option></select></div>
+    <div id="med-lines">
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:10px">
+        <div class="fr" style="margin-bottom:8px">
+          <div><label class="fl">${tv('Medication','Médicament')}</label><select class="fs"><option>Amoxicillin 500mg</option><option>Paracetamol 1g</option><option>Ibuprofen 400mg</option></select></div>
+          <div><label class="fl">${tv('Dosage','Dosage')}</label><input class="fi" value="500mg"/></div>
+        </div>
+        <div class="fr3">
+          <div><label class="fl">${tv('Frequency','Fréquence')}</label><select class="fs"><option>3×/${tv('day','jour')}</option><option>2×/${tv('day','jour')}</option><option>1×/${tv('day','jour')}</option></select></div>
+          <div><label class="fl">${tv('Duration','Durée')}</label><input class="fi" value="7 ${tv('days','jours')}"/></div>
+          <div><label class="fl">${tv('Qty','Quantité')}</label><input class="fi" type="number" value="21"/></div>
+        </div>
+      </div>
+    </div>
+    <button onclick="addMedLine()" style="width:100%;background:transparent;border:1px dashed var(--border);border-radius:var(--r);padding:9px;color:var(--text3);cursor:pointer;font-family:'Inter',sans-serif;font-size:13px;margin-bottom:12px">+ ${tv('Add a medication','Ajouter un médicament')}</button>
+    <div style="background:var(--primary-l);border-radius:var(--r);padding:10px;margin-bottom:14px;font-size:12px;color:var(--primary-d)">✍️ ${tv('Digital signature active · Secured OAuth2 + JWT','Signature numérique activée · Sécurisé OAuth2 + JWT')}</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button>
+      <button class="btn btn-p" onclick="submitOrd()">${tv('Create prescription','Créer l\'ordonnance')}</button>
+    </div>`);
+}
+
+function addMedLine(){
+  const c=document.getElementById('med-lines');
+  const d=document.createElement('div');
+  d.style.cssText='background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px;margin-bottom:10px;position:relative';
+  d.innerHTML=`<button onclick="this.parentElement.remove()" style="position:absolute;top:6px;right:6px;background:var(--danger-bg);border:none;border-radius:4px;padding:2px 6px;cursor:pointer;font-size:11px;color:var(--danger)">×</button>
+  <div class="fr" style="margin-bottom:8px"><div><label class="fl">${tv('Medication','Médicament')}</label><select class="fs"><option>Amoxicillin 500mg</option><option>Paracetamol 1g</option><option>Ibuprofen 400mg</option></select></div><div><label class="fl">${tv('Dosage','Dosage')}</label><input class="fi" value="500mg"/></div></div>
+  <div class="fr3"><div><label class="fl">${tv('Frequency','Fréquence')}</label><select class="fs"><option>3×/day</option><option>2×/day</option></select></div><div><label class="fl">${tv('Duration','Durée')}</label><input class="fi" value="7 days"/></div><div><label class="fl">Qty</label><input class="fi" type="number" value="14"/></div></div>`;
+  c.appendChild(d);
+}
+
+function submitOrd(){
+  closeModal();
+  const badge=document.getElementById('ord-badge');
+  if(badge) badge.textContent=parseInt(badge.textContent)+1;
+  toast('✅ ORD-2025-00043 — '+t('prescription_created')+' '+t('patient_notified'));
+}
+
+function openAddUser(){
+  openModal(`<div class="mhdr"><div class="mt">${tv('Add a user','Ajouter un utilisateur')}</div><button class="mx" onclick="closeModal()">×</button></div>
+  <div class="fr"><div class="fg"><label class="fl">${tv('First name','Prénom')}</label><input class="fi"/></div><div class="fg"><label class="fl">${tv('Last name','Nom')}</label><input class="fi"/></div></div>
+  <div class="fg"><label class="fl">Email</label><input class="fi" type="email"/></div>
+  <div class="fg"><label class="fl">Role</label><select class="fs"><option>${t('role_med')}</option><option>${t('role_pat')}</option><option>${t('role_pharm')}</option></select></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('${tv('Account created!','Compte créé !')}')">${tv('Create account','Créer le compte')}</button></div>`);
+}
+
+function openAddPat(){
+  openModal(`<div class="mhdr"><div class="mt">${t('new_patient')}</div><button class="mx" onclick="closeModal()">×</button></div>
+  <div class="fr"><div class="fg"><label class="fl">${tv('First name','Prénom')}</label><input class="fi"/></div><div class="fg"><label class="fl">${tv('Last name','Nom')}</label><input class="fi"/></div></div>
+  <div class="fr"><div class="fg"><label class="fl">${tv('Date of birth','Date de naissance')}</label><input class="fi" type="date"/></div><div class="fg"><label class="fl">${tv('Blood group','Groupe sanguin')}</label><select class="fs"><option>A+</option><option>A−</option><option>B+</option><option>O+</option><option>O−</option><option>AB+</option></select></div></div>
+  <div class="fg"><label class="fl">${tv('Known allergies','Allergies connues')}</label><input class="fi" placeholder="Penicillin, Aspirin…"/></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('${tv('Patient saved!','Patient enregistré !')}')">${t('save')}</button></div>`);
+}
+
+function openAddMed(){
+  openModal(`<div class="mhdr"><div class="mt">${tv('Add a medication','Ajouter un médicament')}</div><button class="mx" onclick="closeModal()">×</button></div>
+  <div class="fg"><label class="fl">${tv('Trade name','Nom commercial')}</label><input class="fi" placeholder="Doliprane"/></div>
+  <div class="fg"><label class="fl">INN (${tv('International','DCI')})</label><input class="fi" placeholder="Paracetamol"/></div>
+  <div class="fr"><div class="fg"><label class="fl">${tv('Form','Forme')}</label><select class="fs"><option>${tv('Tablet','Comprimé')}</option><option>${tv('Syrup','Sirop')}</option><option>${tv('Injectable','Injectable')}</option></select></div><div class="fg"><label class="fl">${tv('Category','Catégorie')}</label><select class="fs"><option>${tv('Antibiotic','Antibiotique')}</option><option>${tv('Analgesic','Analgésique')}</option><option>${tv('Anti-inflam.','Anti-inflam.')}</option></select></div></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('${tv('Medication added!','Médicament ajouté !')}')">${t('add')}</button></div>`);
+}
+
+function open2FA(){
+  openModal(`<div class="mhdr"><div class="mt">🔐 ${tv('Configure 2FA','Configurer la 2FA')}</div><button class="mx" onclick="closeModal()">×</button></div>
+  <p style="font-size:13px;color:var(--text2);margin-bottom:14px">${tv('Scan this QR code with Google Authenticator or Authy.','Scannez ce QR code avec Google Authenticator ou Authy.')}</p>
+  <div style="text-align:center;margin-bottom:14px"><div class="qrw" style="display:inline-block"><svg width="110" height="110" viewBox="0 0 100 100"><rect width="100" height="100" fill="white"/><rect x="5" y="5" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="12" y="12" width="21" height="21" fill="#222"/><rect x="60" y="5" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="67" y="12" width="21" height="21" fill="#222"/><rect x="5" y="60" width="35" height="35" fill="none" stroke="#222" stroke-width="3"/><rect x="12" y="67" width="21" height="21" fill="#222"/></svg></div></div>
+  <div class="fg"><label class="fl">${tv('6-digit code','Code à 6 chiffres')}</label><input class="fi" placeholder="000000" maxlength="6" style="text-align:center;font-family:'Crimson Pro',serif;font-size:22px;letter-spacing:5px"/></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('✅ 2FA ${tv('enabled','activée')} !')">${tv('Enable 2FA','Activer la 2FA')}</button></div>`);
+}
+
+function openChangePass(){
+  openModal(`<div class="mhdr"><div class="mt">${t('change_password')}</div><button class="mx" onclick="closeModal()">×</button></div>
+  <div class="fg"><label class="fl">${tv('Current password','Mot de passe actuel')}</label><input class="fi" type="password"/></div>
+  <div class="fg"><label class="fl">${tv('New password','Nouveau mot de passe')}</label><input class="fi" type="password"/></div>
+  <div class="fg"><label class="fl">${tv('Confirm new password','Confirmer le nouveau mot de passe')}</label><input class="fi" type="password"/></div>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn btn-s" onclick="closeModal()">${t('cancel')}</button><button class="btn btn-p" onclick="closeModal();toast('${tv('Password updated!','Mot de passe mis à jour !')}')">${tv('Change','Modifier')}</button></div>`);
+}
+
+// ═══════════════════════════════════
+// PHARMACIEN — SCAN
+// ═══════════════════════════════════
+function doScan(){
+  const code=(document.getElementById('scan-input')||{value:'ORD-2025-00042'}).value||'ORD-2025-00042';
+  const box=document.getElementById('scan-result');
+  if(!box) return;
+  box.innerHTML=`
+    <div class="ch"><div class="ct">${code}</div><div class="badge bg-green">✓ ${t('valid')}</div></div>
+    <div style="display:flex;align-items:center;gap:10px;background:var(--surface2);border-radius:var(--r);padding:10px;margin-bottom:12px">
+      <div class="av av-md av-r">PL</div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text)">Paul Lambert</div>
+      <div style="font-size:11px;color:var(--danger)">⚠ ${tv('Allergy: Penicillin','Allergie: Pénicilline')}</div>
+      <div style="font-size:11px;color:var(--text3)">Dr. Martin Dupuis · ${tv('Apr 9, 2025','9 avr. 2025')}</div></div>
+    </div>
+    <div class="mc"><div style="flex:1"><div class="mname">Amoxicillin 500mg</div><div class="mdetail">3×/${tv('day','jour')} · 21 ${tv('tablets','comprimés')}</div></div>
+    <div class="qctrl"><button class="qbtn" onclick="adjQty(0,-1)">−</button><span class="qval" id="q0">${S.qty[0]}</span><button class="qbtn" onclick="adjQty(0,1)">+</button></div></div>
+    <div class="mc"><div style="flex:1"><div class="mname">Ibuprofen 400mg</div><div class="mdetail">2×/${tv('day','jour')} · 10 ${tv('tablets','comprimés')}</div></div>
+    <div class="qctrl"><button class="qbtn" onclick="adjQty(1,-1)">−</button><span class="qval" id="q1">${S.qty[1]}</span><button class="qbtn" onclick="adjQty(1,1)">+</button></div></div>
+    <button class="btn btn-p btn-full" style="margin-top:10px" onclick="confirmDeliver()">${t('deliver')}</button>`;
+  toast(tv('Prescription verified — valid','Ordonnance vérifiée — valide'));
+}
+
+function adjQty(idx,d){ S.qty[idx]=Math.max(0,(S.qty[idx]||0)+d); const e=document.getElementById('q'+idx); if(e)e.textContent=S.qty[idx]; }
+
+function confirmDeliver(){
+  const box=document.getElementById('scan-result');
+  if(!box) return;
+  box.innerHTML=`
+    <div style="text-align:center;padding:24px">
+      <div style="width:64px;height:64px;background:var(--primary-l);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:2px solid var(--primary)">
+        <svg viewBox="0 0 24 24" fill="var(--primary)" style="width:30px;height:30px"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+      </div>
+      <h3 style="font-family:'Crimson Pro',serif;font-size:20px;margin-bottom:6px;color:var(--text)">${t('delivery_done')}</h3>
+      <p style="font-size:12px;color:var(--text3)">Paul Lambert · 31 ${tv('medications dispensed','médicaments remis')}</p>
+      <p style="font-size:12px;color:var(--primary);margin-top:6px"><span class="ldot"></span> ${t('doctor_notified')}</p>
+      <button class="btn btn-s" style="margin-top:16px" onclick="doScan()">${tv('New verification','Nouvelle vérification')}</button>
+    </div>`;
+  toast('✅ '+t('delivery_done'));
+}
+
+function cancelOrd(code){
+  if(confirm(tv(`Cancel prescription ${code}?`,`Annuler l'ordonnance ${code} ?`))){
+    toast(tv(`${code} cancelled`,`Ordonnance ${code} annulée`));
+    closeRP();
+  }
+}
+
+// ═══════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════
+function toast(msg,dur=3000){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+function toggleDD(id){ const m=document.getElementById(id); m.style.display=m.style.display==='none'?'block':'none'; }
+function closeDD(id){ const m=document.getElementById(id); if(m) m.style.display='none'; }
+
+function applyTheme(th){
+  S.theme=th;
+  document.documentElement.setAttribute('data-theme',th);
+  toast(tv('Theme applied: ','Thème appliqué : ')+th);
+  renderContent();
+}
+
+function applyLang(lang){
+  S.lang=lang;
+  applyI18n();
+  toast(lang==='fr'?'Langue : Français':'Language: English');
+  renderContent();
+}
+
+function applyI18n(){
+  document.querySelectorAll('[data-i]').forEach(el=>{
+    const v=t(el.getAttribute('data-i'));
+    if(v) el.textContent=v;
+  });
+  const rl=document.getElementById('uchip-role');
+  if(rl) rl.textContent=S.lang==='fr'?ROLES[S.role].labelFr:ROLES[S.role].label;
+}
+
+function toggleTog(id,btn){
+  S.togStates[id]=!S.togStates[id];
+  btn.classList.toggle('on',S.togStates[id]);
+  toast(S.togStates[id]?tv('Enabled','Activé'):tv('Disabled','Désactivé'));
+}
+
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.dd')) document.querySelectorAll('.dm').forEach(m=>m.style.display='none');
+});
+</script>
+</body>
+</html>

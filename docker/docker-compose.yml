@@ -1,0 +1,216 @@
+version: '3.9'
+
+# ============================================================
+# Docker Compose — Projet Ordonnance Numérique
+# Lance toute l'infrastructure en une seule commande :
+# docker compose up -d
+# ============================================================
+
+services:
+
+  # ----------------------------------------------------------
+  # BASE DE DONNÉES PRINCIPALE
+  # PostgreSQL 16 avec extension PostGIS (géolocalisation)
+  # ----------------------------------------------------------
+  postgres:
+    image: postgis/postgis:16-3.4
+    container_name: ordonnance_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ordonnance_db
+      POSTGRES_USER: ordonnance_user
+      POSTGRES_PASSWORD: ordonnance_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ordonnance_user -d ordonnance_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------
+  # INTERFACE WEB POUR LA BASE DE DONNÉES
+  # Accès : http://localhost:8081
+  # Serveur: postgres | Utilisateur: ordonnance_user | MDP: ordonnance_pass
+  # ----------------------------------------------------------
+  adminer:
+    image: adminer:latest
+    container_name: ordonnance_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
+  # ----------------------------------------------------------
+  # REDIS — Cache et gestion des sessions
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: ordonnance_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+
+  # ----------------------------------------------------------
+  # REDIS INSIGHTS — Interface web pour Redis
+  # Accès : http://localhost:8001
+  # ----------------------------------------------------------
+  redis-insights:
+    image: redislabs/redisinsight:latest
+    container_name: ordonnance_redis_insights
+    restart: unless-stopped
+    ports:
+      - "8001:5540"
+    depends_on:
+      - redis
+
+  # ----------------------------------------------------------
+  # ZOOKEEPER — Requis par Kafka
+  # ----------------------------------------------------------
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: ordonnance_zookeeper
+    restart: unless-stopped
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    volumes:
+      - zookeeper_data:/var/lib/zookeeper/data
+      - zookeeper_logs:/var/lib/zookeeper/log
+
+  # ----------------------------------------------------------
+  # APACHE KAFKA — Messagerie temps réel
+  # Pour les notifications : médecin notifié quand ordonnance utilisée, etc.
+  # ----------------------------------------------------------
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: ordonnance_kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092,PLAINTEXT_INTERNAL://kafka:29092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    depends_on:
+      - zookeeper
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+
+  # ----------------------------------------------------------
+  # KAFKA UI — Interface web pour Kafka
+  # Accès : http://localhost:8080
+  # ----------------------------------------------------------
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: ordonnance_kafka_ui
+    restart: unless-stopped
+    ports:
+      - "8082:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: ordonnance-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+    depends_on:
+      - kafka
+
+  # ----------------------------------------------------------
+  # MINIO — Stockage de fichiers (PDF ordonnances, images)
+  # Console : http://localhost:9001
+  # Login: minioadmin / minioadmin
+  # ----------------------------------------------------------
+  minio:
+    image: minio/minio:latest
+    container_name: ordonnance_minio
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+  # ----------------------------------------------------------
+  # MOCK BACKEND (Node.js/Express) — Pour le développement
+  # Simule le vrai backend Spring Boot pendant le développement
+  # Accès : http://localhost:3001
+  # ----------------------------------------------------------
+  mock-backend:
+    build:
+      context: ./mock-backend
+      dockerfile: Dockerfile
+    container_name: ordonnance_mock_backend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+      PORT: 3001
+      DATABASE_URL: postgresql://ordonnance_user:ordonnance_pass@postgres:5432/ordonnance_db
+      REDIS_URL: redis://redis:6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./mock-backend:/app
+      - /app/node_modules
+
+  # ----------------------------------------------------------
+  # FRONTEND WEB (Next.js)
+  # Accès : http://localhost:3000
+  # ----------------------------------------------------------
+  ordonnance-app:
+    build:
+      context: ./ordonnance-app
+      dockerfile: Dockerfile
+    container_name: ordonnance_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: http://localhost:3001
+    depends_on:
+      - mock-backend
+    volumes:
+      - ./ordonnance-app:/app
+      - /app/node_modules
+      - /app/.next
+
+# ----------------------------------------------------------
+# VOLUMES — Persistance des données
+# ----------------------------------------------------------
+volumes:
+  postgres_data:
+    name: ordonnance_postgres_data
+  redis_data:
+    name: ordonnance_redis_data
+  zookeeper_data:
+    name: ordonnance_zookeeper_data
+  zookeeper_logs:
+    name: ordonnance_zookeeper_logs
+  kafka_data:
+    name: ordonnance_kafka_data
+  minio_data:
+    name: ordonnance_minio_data
+
+# ----------------------------------------------------------
+# RÉSEAU — Tous les services communiquent entre eux
+# ----------------------------------------------------------
+networks:
+  default:
+    name: ordonnance_network
